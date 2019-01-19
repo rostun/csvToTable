@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
+import "../sass/AwesomeTable.scss";
+
 class AwesomeTable extends Component {
    constructor(props) {
       super(props);

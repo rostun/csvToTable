@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import "./UploadFile.scss";
+import "../sass/UploadFile.scss";
 
 class UploadFile extends Component {
    constructor(props) {
