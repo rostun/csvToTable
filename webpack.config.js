@@ -13,10 +13,11 @@ module.exports = {
             options: { presets: ["@babel/env"] }
          },
          {
-            test: /\.css$/,
+            test: /\.(css|scss)$/,
 				use: [
 					"style-loader", 	//takes css and inserts it into the page
-					"css-loader" 		//translates css into commonJS
+               "css-loader", 		//translates css into commonJS
+               "sass-loader"
 				]
          }
       ]

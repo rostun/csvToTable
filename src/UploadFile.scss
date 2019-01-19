@@ -1,0 +1,14 @@
+.UploadFile {
+	.uploadButton {
+		display: block;
+		width: 125px;
+		height: 50px;
+		background-color: palevioletred;
+		#fileInput {
+			display: none;
+		}
+	}
+	.uploadButton:hover {
+		cursor: pointer;
+	}
+}
