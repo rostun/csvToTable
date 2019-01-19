@@ -18,7 +18,9 @@ class UploadFile extends Component {
       if (_files.length !== 0) {
          this.props.onChangeAction(_files[0]);
          this.setState({ file: _files[0] });
-      }
+		}
+		//reset to allow for same file
+		e.target.value = ''; 
    }
 
    render() {
