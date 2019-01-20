@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
-import "../sass/AwesomeTable.scss";
+import "../sass/SummaryStats.scss";
 
-class AwesomeTable extends Component {
+class SummaryStats extends Component {
    constructor(props) {
       super(props);
 
@@ -20,11 +20,6 @@ class AwesomeTable extends Component {
       if (this.props.data !== prevProps.data) {
          this.setState({ rowData: this.props.data });
       }
-   }
-
-   _convertCell(cellString) {
-      const cell_value = cellString * 1;
-      return isNaN(cell_value) ? cellString : cell_value;
    }
 
    _renderTableHead() {
@@ -60,8 +55,7 @@ class AwesomeTable extends Component {
       const CustomTag = tag;
 
       let _cells = row.map((cell, idx) => {
-         const _cell = this._convertCell(cell);
-         return <CustomTag key={`${keyName}-${idx}`}>{_cell}</CustomTag>;
+         return <CustomTag key={`${keyName}-${idx}`}>{cell}</CustomTag>;
       });
 
       //add index to beginning of row
@@ -83,8 +77,8 @@ class AwesomeTable extends Component {
    }
 }
 
-AwesomeTable.propTypes = {
+SummaryStats.propTypes = {
    data: PropTypes.array
 };
 
-export default AwesomeTable;
+export default SummaryStats;
