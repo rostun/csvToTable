@@ -22,12 +22,38 @@ class SummaryStats extends Component {
       }
    }
 
+   _renderMean() {
+      return (
+         <tr>
+            <td>hello</td>
+         </tr>
+      );
+   }
+
+   _renderMedian() {
+      return (
+         <tr>
+            <td>hello</td>
+         </tr>
+      );
+   }
+
+   _renderMode() {
+      return (
+         <tr>
+            <td>hello</td>
+         </tr>
+      );
+   }
+
    render() {
-      return <tfoot>
-			<tr>
-				<td>hello</td>
-			</tr>
-		</tfoot>;
+      return (
+         <tfoot>
+            {this._renderMean()}
+            {this._renderMedian()}
+            {this._renderMode()}
+         </tfoot>
+      );
    }
 }
 

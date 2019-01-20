@@ -35,8 +35,12 @@ class AwesomeTable extends Component {
    }
 
    _convertCell(cellString) {
+      return cellString * 1;
+   }
+
+   _isNumber(cellString) {
       const cell_value = cellString * 1;
-      return isNaN(cell_value) ? cellString : cell_value;
+      return !isNaN(cell_value);
    }
 
    _renderTableHead() {
@@ -53,7 +57,7 @@ class AwesomeTable extends Component {
 
    _renderTableBody() {
       //remove first row (header row)
-      let _bodyRows = this.state.tableData;
+      let _bodyRows = Object.assign([], this.state.tableData);
 
       _bodyRows.shift(); //_bodyRows.splice(0, 1);
 
@@ -72,17 +76,17 @@ class AwesomeTable extends Component {
       const CustomTag = tag;
 
       return row.map((cell, idx) => {
-         const _cell = this._convertCell(cell);
+         const _cell = this._isNumber(cell) ? this._convertCell(cell) : cell;
          return <CustomTag key={`${keyName}-${idx}`}>{_cell}</CustomTag>;
       });
    }
 
    render() {
-      const _tableData = this.state.tableData;
+      //arrays are passed by reference
+      let _tableData = Object.assign([], this.state.tableData);
 
       if (_tableData && _tableData.length > 0) {
          _tableData.shift();
-
          return (
             <table className="AwesomeTable">
                {this._renderTableHead()}
