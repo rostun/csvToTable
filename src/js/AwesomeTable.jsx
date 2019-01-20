@@ -2,24 +2,36 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 
 import "../sass/AwesomeTable.scss";
+import SummaryStats from "./SummaryStats";
 
 class AwesomeTable extends Component {
    constructor(props) {
       super(props);
 
       this.state = {
-         rowData: []
+         tableData: []
       };
    }
 
    componentDidMount() {
-      this.setState({ rowData: this.props.data });
+      this.setState({ tableData: this._numberRows(this.props.tableData) });
    }
 
    componentDidUpdate(prevProps) {
-      if (this.props.data !== prevProps.data) {
-         this.setState({ rowData: this.props.data });
+      if (this.props.tableData !== prevProps.tableData) {
+         this.setState({ tableData: this._numberRows(this.props.tableData) });
       }
+   }
+
+   _numberRows(_tableData) {
+      if (_tableData && _tableData.length > 0) {
+         _tableData = _tableData.map((row, idx) => {
+            row.unshift(idx);
+            return row;
+         });
+      }
+
+      return _tableData;
    }
 
    _convertCell(cellString) {
@@ -29,8 +41,8 @@ class AwesomeTable extends Component {
 
    _renderTableHead() {
       //first row is header row
-      const _headerRow = this.state.rowData[0];
-      const _headerCols = this._renderRow(_headerRow, "headerCell", "th", 0);
+      const _headerRow = this.state.tableData[0];
+      const _headerCols = this._renderRow(_headerRow, "headerCell", "th");
 
       return (
          <thead>
@@ -41,14 +53,14 @@ class AwesomeTable extends Component {
 
    _renderTableBody() {
       //remove first row (header row)
-      let _bodyRows = this.state.rowData;
-      
+      let _bodyRows = this.state.tableData;
+
       _bodyRows.shift(); //_bodyRows.splice(0, 1);
 
       const _bodyCols = _bodyRows.map((bodyRow, idx) => {
          return (
             <tr key={`bodyRow=${idx}`} title={`row ${idx + 1}`}>
-               {this._renderRow(bodyRow, "bodyCell", "td", idx + 1)}
+               {this._renderRow(bodyRow, "bodyCell", "td")}
             </tr>
          );
       });
@@ -56,25 +68,26 @@ class AwesomeTable extends Component {
       return <tbody>{_bodyCols}</tbody>;
    }
 
-   _renderRow(row, keyName, tag, index) {
+   _renderRow(row, keyName, tag) {
       const CustomTag = tag;
 
-      let _cells = row.map((cell, idx) => {
+      return row.map((cell, idx) => {
          const _cell = this._convertCell(cell);
          return <CustomTag key={`${keyName}-${idx}`}>{_cell}</CustomTag>;
       });
-
-      //add index to beginning of row
-      _cells.unshift(<CustomTag key={`rowNumber-${index}`}>{index}</CustomTag>);
-      return _cells;
    }
 
    render() {
-      if (this.state.rowData.length > 0) {
+      const _tableData = this.state.tableData;
+
+      if (_tableData && _tableData.length > 0) {
+         _tableData.shift();
+
          return (
             <table className="AwesomeTable">
                {this._renderTableHead()}
                {this._renderTableBody()}
+               <SummaryStats bodyData={_tableData} />
             </table>
          );
       } else {
@@ -84,7 +97,7 @@ class AwesomeTable extends Component {
 }
 
 AwesomeTable.propTypes = {
-   data: PropTypes.array
+   tableData: PropTypes.array
 };
 
 export default AwesomeTable;

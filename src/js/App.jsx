@@ -35,7 +35,7 @@ class App extends Component {
       return (
          <div className="App">
             <UploadFile onChangeAction={this._parseFile.bind(this)} />
-            <AwesomeTable data={this.state.data} />
+            <AwesomeTable tableData={this.state.data} />
          </div>
       );
    }
