@@ -25,7 +25,7 @@ class AwesomeTable extends Component {
    _renderTableHead() {
       //first row is header row
 		const _headerRow = this.state.rowData[0];
-      const _headerCols = this._renderRow(_headerRow, 'headerCell', 'th');
+      const _headerCols = this._renderRow(_headerRow, 'headerCell', 'th', 0);
 
       return <thead><tr>{_headerCols}</tr></thead>;
    }
@@ -35,17 +35,21 @@ class AwesomeTable extends Component {
 		let _bodyRows = this.state.rowData;
 		_bodyRows.shift(); //_bodyRows.splice(0, 1);
       const _bodyCols = _bodyRows.map((bodyRow, idx) => {
-         return <tr key={`bodyRow=${idx}`}>{this._renderRow(bodyRow, 'bodyCell', 'td')}</tr>;
+         return <tr key={`bodyRow=${idx}`}>{this._renderRow(bodyRow, 'bodyCell', 'td', idx+1)}</tr>;
       });
 
       return <tbody>{_bodyCols}</tbody>;
    }
 
-	_renderRow(row, keyName, tag) {
-		const CustomTag = tag;
-      return row.map((cell, idx) => {
+	_renderRow(row, keyName, tag, index) {
+      const CustomTag = tag;
+
+      let _cells = row.map((cell, idx) => {
          return <CustomTag key={`${keyName}-${idx}`}>{cell}</CustomTag>;
       });
+      //add index to beginning of row
+      _cells.unshift(<CustomTag key={`rowNumber-${index}`}>{index}</CustomTag>);
+      return _cells;
 	}
 
    render() {
