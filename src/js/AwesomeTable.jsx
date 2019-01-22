@@ -26,7 +26,7 @@ class AwesomeTable extends Component {
    _numberRows(_tableData) {
       if (_tableData && _tableData.length > 0) {
          _tableData = _tableData.map((row, idx) => {
-            row.unshift(idx);
+            row.unshift(idx.toString()); //indices should not be sorted
             return row;
          });
       }
@@ -36,6 +36,19 @@ class AwesomeTable extends Component {
 
    _convertCell(cellString) {
       return cellString * 1;
+   }
+
+   _createTemplate() {
+      const _tableData = this.state.tableData;
+      let _template = []; //this will contain the indices of numerical columns
+      if (_tableData) {
+         _tableData[0].forEach((cell, idx) => {
+            if (!isNaN(cell)) {
+               _template.push(idx);
+            }
+         });
+      }
+      return _template;
    }
 
    _isNumber(cellString) {
@@ -76,14 +89,22 @@ class AwesomeTable extends Component {
       const CustomTag = tag;
 
       return row.map((cell, idx) => {
-         const _cell = this._isNumber(cell) ? this._convertCell(cell) : cell;
+         const _cell =
+            this._isNumber(cell) && idx !== 0 ? this._convertCell(cell) : cell;
          return <CustomTag key={`${keyName}-${idx}`}>{_cell}</CustomTag>;
       });
    }
 
+   _renderSummaryStats() {
+      //determine if we need to show footer
+      const _template = this._createTemplate();
+      if (_template.length > 0) {
+         return <SummaryStats bodyData={_tableData} template={_template} />;
+      }
+   }
+
    render() {
-      //arrays are passed by reference
-      let _tableData = Object.assign([], this.state.tableData);
+      let _tableData = Object.assign([], this.state.tableData); //arrays are passed by reference
 
       if (_tableData && _tableData.length > 0) {
          _tableData.shift();
@@ -91,7 +112,7 @@ class AwesomeTable extends Component {
             <table className="AwesomeTable">
                {this._renderTableHead()}
                {this._renderTableBody()}
-               <SummaryStats bodyData={_tableData} />
+               {this._renderSummaryStats()}
             </table>
          );
       } else {
