@@ -6,34 +6,61 @@ class SummaryStats extends Component {
       super(props);
 
       this.state = {
-         grid: [],
-         template: []
+         statData: {}
       };
    }
 
    componentDidMount() {
-      this.setState({ grid: this.props.bodyData });
+      this.setState({ statData: this._calculateStatData(this.props.bodyData) });
    }
 
    componentDidUpdate(prevProps) {
       if (this.props.bodyData !== prevProps.bodyData) {
-         this.setState({ grid: this.props.bodyData });
+         this.setState({
+            statData: this._calculateStatData(this.props.bodyData)
+         });
       }
    }
 
-   _calculateTemplate(_bodyData) {}
+   _createTemplate(row) {
+      let _template = {}; //this will contain the indices of interest (numbers)
 
-   _calculateGrid(_bodyData) {
-      const _template = this._calculateRowTemplate(); //[1, 3, 5]
-      const _dataByColumns = [];
+      for (let i = 1; i < row.length; i++) {
+         if (this._isNumber(row[i])) {
+            _template[i] = null;
+         }
+      }
+
+      return _template;
+   }
+
+   /*
+   statData: {
+      #: {
+         listOfNumbers: [#'s],
+         sum: #,
+         mean: #,
+         median: #,
+         mode: #
+      }
+   }
+   */
+   _calculateStatData(bodyData) {
+      if (!bodyData || bodyData.length === 0) {
+         return {};
+      }
+
+      return {};
+      const _template = this._createTemplate(bodyData[0]);
 
       //go through each row
-      this.props.bodyData.forEach((row, x) => {
-         //go through each column
-         row.forEach((cell, y) => {
-            //if index is one we care about
-            //array[i].push(row[i])
-         });
+      bodyData.forEach((row, x) => {
+         //go through each column starting from second index
+         for (let i = 1; i < row.length; i++) {
+            if (i in _template) {
+               //we gotta put it in the statdata
+            }
+         }
       });
    }
 
@@ -41,7 +68,7 @@ class SummaryStats extends Component {
       //traverse through array
       return (
          <tr>
-            <td>hello</td>
+            <td>Mean</td>
          </tr>
       );
    }
@@ -49,7 +76,7 @@ class SummaryStats extends Component {
    _renderMedian() {
       return (
          <tr>
-            <td>hello</td>
+            <td>Median</td>
          </tr>
       );
    }
@@ -57,35 +84,33 @@ class SummaryStats extends Component {
    _renderMode() {
       return (
          <tr>
-            <td>hello</td>
+            <td>Mode</td>
          </tr>
       );
    }
 
    render() {
-      const _grid = this.state.grid;
+      const _statData = this.state.statData;
 
-      if (_grid && _grid.length > 0) {
-         return (
-            <tfoot>
-               {this._renderMean()}
-               {this._renderMedian()}
-               {this._renderMode()}
-            </tfoot>
-         );
-      } else {
+      if (!_statData || Object.keys(_statData).length === 0) {
          return (
             <tfoot>
                <tr>No Number Columns</tr>
             </tfoot>
          );
       }
+      return (
+         <tfoot>
+            {this._renderMean()}
+            {this._renderMedian()}
+            {this._renderMode()}
+         </tfoot>
+      );
    }
 }
 
 SummaryStats.propTypes = {
-   bodyData: PropTypes.array,
-   template: PropTypes.array
+   bodyData: PropTypes.array
 };
 
 export default SummaryStats;
