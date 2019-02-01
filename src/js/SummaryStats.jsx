@@ -70,27 +70,38 @@ class SummaryStats extends Component {
                _template[i].listOfNumbers.push(_num);
                _template[i].sum += _num;
             }
-            if(i in _template && Object.keys(_template[i]).length === 0) {
+            if (i in _template && Object.keys(_template[i]).length === 0) {
                _template[i].listOfNumbers = [_num];
                _template[i].sum = _num;
             }
          }
       });
 
-      console.log("template: ", _template);
       return _template;
    }
 
-   _renderMean() {
-      //traverse through array
+   _renderMean(bodyData, template) {
+      const _numRows = bodyData.length;
+      const _numCols = bodyData[0].length;
+
+      let _meanCols = [];
+
+      for (let i = 1; i < _numCols; i++) {
+         const _key = `mean-${i}`;
+
+         const _mean = i in template ? template[i].sum / _numRows : null;
+         _meanCols.push(<td key={_key}>{_mean}</td>);
+      }
+
       return (
          <tr>
-            <td>Mean</td>
+            <td>{"Mean"}</td>
+            {_meanCols}
          </tr>
       );
    }
 
-   _renderMedian() {
+   _renderMedian(bodyData, template) {
       return (
          <tr>
             <td>Median</td>
@@ -98,7 +109,7 @@ class SummaryStats extends Component {
       );
    }
 
-   _renderMode() {
+   _renderMode(bodyData, template) {
       return (
          <tr>
             <td>Mode</td>
@@ -118,9 +129,9 @@ class SummaryStats extends Component {
       }
       return (
          <tfoot>
-            {this._renderMean()}
-            {this._renderMedian()}
-            {this._renderMode()}
+            {this._renderMean(this.props.bodyData, _statData)}
+            {this._renderMedian(this.props.bodyData, _statData)}
+            {this._renderMode(this.props.bodyData, _statData)}
          </tfoot>
       );
    }
