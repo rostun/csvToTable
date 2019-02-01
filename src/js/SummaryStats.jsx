@@ -101,12 +101,37 @@ class SummaryStats extends Component {
       );
    }
 
+   _findMedian(values) {
+      values.sort((a, b) => a - b); //The compare function should return -1, 0 or +1
+
+      const _half = Math.floor(values.length / 2);
+
+      return values.length % 2 ? values[_half] : (values[_half - 1] + values[_half]) / 2.0;
+   }
+
    _renderMedian(bodyData, template) {
+      const _numRows = bodyData.length;
+      const _numCols = bodyData[0].length;
+
+      let _medCols = [];
+
+      for (let i = 1; i < _numCols; i++) {
+         const _key = `med-${i}`;
+
+         const _med = i in template ? this._findMedian(template[i].listOfNumbers) : null;
+         _medCols.push(<td key={_key}>{_med}</td>);
+      }
+
       return (
          <tr>
-            <td>Median</td>
+            <td>{"Mean"}</td>
+            {_medCols}
          </tr>
       );
+   }
+
+   findMode(values) {
+
    }
 
    _renderMode(bodyData, template) {
