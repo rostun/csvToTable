@@ -22,15 +22,23 @@ class SummaryStats extends Component {
       }
    }
 
+   _isNumber(cellString) {
+      const _cellValue = cellString * 1;
+      return !isNaN(_cellValue);
+   }
+
+   _convertNumberString(cellString) {
+      return cellString * 1;
+   }
+
    _createTemplate(row) {
       let _template = {}; //this will contain the indices of interest (numbers)
 
       for (let i = 1; i < row.length; i++) {
          if (this._isNumber(row[i])) {
-            _template[i] = null;
+            _template[i] = {};
          }
       }
-
       return _template;
    }
 
@@ -50,18 +58,27 @@ class SummaryStats extends Component {
          return {};
       }
 
-      return {};
-      const _template = this._createTemplate(bodyData[0]);
+      let _template = this._createTemplate(bodyData[0]);
 
       //go through each row
       bodyData.forEach((row, x) => {
          //go through each column starting from second index
          for (let i = 1; i < row.length; i++) {
-            if (i in _template) {
-               //we gotta put it in the statdata
+            //if its a number column convert it and push it into the template (meanwhile also find the sum)
+            let _num = i in _template ? this._convertNumberString(row[i]) : 0;
+            if (i in _template && Object.keys(_template[i]).length !== 0) {
+               _template[i].listOfNumbers.push(_num);
+               _template[i].sum += _num;
+            }
+            if(i in _template && Object.keys(_template[i]).length === 0) {
+               _template[i].listOfNumbers = [_num];
+               _template[i].sum = _num;
             }
          }
       });
+
+      console.log("template: ", _template);
+      return _template;
    }
 
    _renderMean() {

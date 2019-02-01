@@ -38,10 +38,6 @@ class AwesomeTable extends Component {
       return tableData;
    }
 
-   _convertCell(cellString) {
-      return cellString * 1;
-   }
-
    _isNumber(cellString) {
       const _cellValue = cellString * 1;
       return !isNaN(_cellValue);
@@ -82,9 +78,7 @@ class AwesomeTable extends Component {
       const CustomTag = tag;
 
       return row.map((cell, idx) => {
-         const _cell =
-            this._isNumber(cell) && idx !== 0 ? this._convertCell(cell) : cell;
-         return <CustomTag key={`${keyName}-${idx}`}>{_cell}</CustomTag>;
+         return <CustomTag key={`${keyName}-${idx}`}>{cell}</CustomTag>;
       });
    }
 
