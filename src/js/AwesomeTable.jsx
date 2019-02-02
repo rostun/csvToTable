@@ -99,10 +99,10 @@ class AwesomeTable extends Component {
       this.bodyRows.shift();
 
       return (
-         <table className="AwesomeTable">
+         <table className="AwesomeTable">            
             {this._renderTableHead(_tableData[0])}
-            {this._renderTableBody(this.bodyRows)}
-            {this._renderSummaryStats(this.bodyRows)}
+            {this._renderTableBody(this.bodyRows)}    
+            {this._renderSummaryStats(this.bodyRows)}        
          </table>
       );
    }
