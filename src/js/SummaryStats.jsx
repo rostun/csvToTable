@@ -1,6 +1,22 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
+const A_M = {
+   a: null,
+   b: null,
+   c: null,
+   d: null,
+   e: null,
+   f: null,
+   g: null,
+   h: null,
+   i: null,
+   j: null,
+   k: null,
+   l: null,
+   m: null
+};
+
 class SummaryStats extends Component {
    constructor(props) {
       super(props);
@@ -14,8 +30,8 @@ class SummaryStats extends Component {
    componentDidMount() {
       const _data = this._calculateData(this.props.bodyData);
 
-      this.setState({ 
-         statData: _data.statData, 
+      this.setState({
+         statData: _data.statData,
          textData: _data.textData
       });
    }
@@ -26,7 +42,7 @@ class SummaryStats extends Component {
 
          this.setState({
             statData: _data.statData,
-            textData: _data.textData         
+            textData: _data.textData
          });
       }
    }
@@ -54,13 +70,13 @@ class SummaryStats extends Component {
       const _data = this._createTemplate(bodyData[0]);
       let _statData = _data.statTemplate;
       let _textData = _data.textTemplate;
-      const a_m = {a: null, b: null, c: null, d:null, e:null, f:null, g:null, h:null, i:null, j:null, k:null, l:null, m:null };
 
       //go through each row
       bodyData.forEach((row, x) => {
          //go through each column starting from second index
-         for (let i = 1; i < row.length; i++) {            
-            let _val = i in _statData ? this._convertNumberString(row[i]) : row[i];
+         for (let i = 1; i < row.length; i++) {
+            let _val =
+               i in _statData ? this._convertNumberString(row[i]) : row[i];
             //if its a number column convert to num and push data (meanwhile also find the sum)
             if (i in _statData && Object.keys(_statData[i]).length !== 0) {
                _statData[i].listOfNumbers.push(_val);
@@ -73,11 +89,15 @@ class SummaryStats extends Component {
             //if it's a string column push data (meanwhile add tally to which half of the alphabet they're in)
             if (i in _textData && Object.keys(_textData[i]).length !== 0) {
                _textData[i].listOfWords.push(_val);
-               _val[0].toLowerCase() in a_m ? _textData[i].a_m++ : _textData[i].n_z++;
+               _val[0].toLowerCase() in A_M
+                  ? _textData[i].a_m++
+                  : _textData[i].n_z++;
             }
             if (i in _textData && Object.keys(_textData[i]).length === 0) {
                _textData[i].listOfWords = [_val];
-               _val[0].toLowerCase() in a_m ? (_textData[i].a_m=1, _textData[i].n_z=0) : (_textData[i].n_z=1, _textData[i].a_m=0);
+               _val[0].toLowerCase() in A_M
+                  ? ((_textData[i].a_m = 1), (_textData[i].n_z = 0))
+                  : ((_textData[i].n_z = 1), (_textData[i].a_m = 0));
             }
          }
       });
@@ -91,7 +111,9 @@ class SummaryStats extends Component {
       let _textTemplate = {}; //(text)
 
       for (let i = 1; i < row.length; i++) {
-         this._isNumber(row[i]) ? _statTemplate[i] = {} : _textTemplate[i] = {};
+         this._isNumber(row[i])
+            ? (_statTemplate[i] = {})
+            : (_textTemplate[i] = {});
       }
       return { statTemplate: _statTemplate, textTemplate: _textTemplate };
    }
@@ -164,7 +186,8 @@ class SummaryStats extends Component {
       for (let i = 1; i < _numCols; i++) {
          const _key = `med-${i}`;
 
-         const _med = i in statData ? this._findMedian(statData[i].listOfNumbers) : null;
+         const _med =
+            i in statData ? this._findMedian(statData[i].listOfNumbers) : null;
          _medCols.push(<td key={_key}>{_med}</td>);
       }
 
@@ -183,7 +206,10 @@ class SummaryStats extends Component {
       for (let i = 1; i < _numCols; i++) {
          const _key = `med-${i}`;
 
-         const _modes = i in statData ? this._findMode(statData[i].listOfNumbers).toString() : null;
+         const _modes =
+            i in statData
+               ? this._findMode(statData[i].listOfNumbers).toString()
+               : null;
          _modeCols.push(<td key={_key}>{_modes}</td>);
       }
 
@@ -205,7 +231,7 @@ class SummaryStats extends Component {
 
          if (i in statData) {
             const _list = statData[i].listOfNumbers;
-            _ranges = `${_list[0]}-${_list[_list.length-1]}`;
+            _ranges = `${_list[0]}-${_list[_list.length - 1]}`;
          }
 
          _rangeCols.push(<td key={_key}>{_ranges}</td>);
@@ -282,9 +308,7 @@ class SummaryStats extends Component {
          return (
             <tfoot>
                <tr>
-                  <td colSpan={_bodyData[0].length}>
-                     No Number Columns
-                  </td>
+                  <td colSpan={_bodyData[0].length}>No Number Columns</td>
                </tr>
             </tfoot>
          );
