@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
+import "../sass/PaginationBlock.scss";
+
 class PaginationBlock extends Component {
    constructor(props) {
       super(props);
@@ -56,7 +58,7 @@ class PaginationBlock extends Component {
          return <div>One Page</div>;
       }
 
-      return <div className="PaginationBlock">{this.state.pageList}</div>;
+      return <ul className="PaginationBlock">{this.state.pageList}</ul>;
    }
 }
 
