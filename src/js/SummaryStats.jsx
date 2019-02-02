@@ -80,10 +80,41 @@ class SummaryStats extends Component {
       return _template;
    }
 
+   _findMedian(values) {
+      values.sort((a, b) => a - b); //The compare function should return -1, 0 or +1
+
+      const _half = Math.floor(values.length / 2);
+
+      return values.length % 2
+         ? values[_half]
+         : (values[_half - 1] + values[_half]) / 2.0;
+   }
+
+   _findMode(values) {
+      let _modeLookup = {};
+      let _modes = [{ value: 0, count: 0 }];
+
+      values.forEach(num => {
+         num in _modeLookup ? _modeLookup[num]++ : (_modeLookup[num] = 1);
+      });
+
+      Object.keys(_modeLookup).forEach(prop => {
+         if (_modeLookup[prop] === _modes[0].count) {
+            _modes.push({ value: prop, count: _modeLookup[prop] });
+         }
+         if (_modeLookup[prop] > _modes[0].count) {
+            _modes = [{ value: prop, count: _modeLookup[prop] }];
+         }
+      });
+
+      return _modes.map(mode => {
+         return mode.value;
+      });
+   }
+
    _renderMean(bodyData, template) {
       const _numRows = bodyData.length;
       const _numCols = bodyData[0].length;
-
       let _meanCols = [];
 
       for (let i = 1; i < _numCols; i++) {
@@ -101,26 +132,14 @@ class SummaryStats extends Component {
       );
    }
 
-   _findMedian(values) {
-      values.sort((a, b) => a - b); //The compare function should return -1, 0 or +1
-
-      const _half = Math.floor(values.length / 2);
-
-      return values.length % 2
-         ? values[_half]
-         : (values[_half - 1] + values[_half]) / 2.0;
-   }
-
    _renderMedian(bodyData, template) {
       const _numCols = bodyData[0].length;
-
       let _medCols = [];
 
       for (let i = 1; i < _numCols; i++) {
          const _key = `med-${i}`;
 
-         const _med =
-            i in template ? this._findMedian(template[i].listOfNumbers) : null;
+         const _med = i in template ? this._findMedian(template[i].listOfNumbers) : null;
          _medCols.push(<td key={_key}>{_med}</td>);
       }
 
@@ -132,41 +151,14 @@ class SummaryStats extends Component {
       );
    }
 
-   _findMode(values) {
-      let _modeLookup = {};
-
-      values.forEach(num => {
-         num in _modeLookup ? _modeLookup[num]++ : (_modeLookup[num] = 1);
-      });
-
-      let _modes = [{ value: 0, count: 0 }];
-
-      Object.keys(_modeLookup).forEach(prop => {
-         if (_modeLookup[prop] === _modes[0].count) {
-            _modes.push({ value: prop, count: _modeLookup[prop] });
-         }
-         if (_modeLookup[prop] > _modes[0].count) {
-            _modes = [{ value: prop, count: _modeLookup[prop] }];
-         }
-      });
-
-      return _modes.map(mode => {
-         return mode.value;
-      });
-   }
-
    _renderMode(bodyData, template) {
       const _numCols = bodyData[0].length;
-
       let _modeCols = [];
 
       for (let i = 1; i < _numCols; i++) {
          const _key = `med-${i}`;
 
-         const _modes =
-            i in template
-               ? this._findMode(template[i].listOfNumbers).toString()
-               : null;
+         const _modes = i in template ? this._findMode(template[i].listOfNumbers).toString() : null;
          _modeCols.push(<td key={_key}>{_modes}</td>);
       }
 
@@ -178,14 +170,57 @@ class SummaryStats extends Component {
       );
    }
 
+   _renderRange(bodyData, template) {
+      const _numCols = bodyData[0].length;
+      let _rangeCols = [];
+
+      for (let i = 1; i < _numCols; i++) {
+         const _key = `range-${i}`;
+         const _ranges = null;
+
+         if (i in template) {
+            const _list = template[i].listOfNumbers;
+            _ranges = `${_list[0]}-${_list[_list.length-1]}`;
+         }
+
+         _rangeCols.push(<td key={_key}>{_ranges}</td>);
+      }
+
+      return (
+         <tr>
+            <td>Range</td>
+            {_rangeCols}
+         </tr>
+      );
+   }
+
+   _renderSum(bodyData, template) {
+      const _numCols = bodyData[0].length;
+      let _sumCols = [];
+
+      for (let i = 1; i < _numCols; i++) {
+         const _key = `sum-${i}`;
+         const _sums = i in template ? template[i].sum : null;
+         _sumCols.push(<td key={_key}>{_sums}</td>);
+      }
+
+      return (
+         <tr>
+            <td>Sum</td>
+            {_sumCols}
+         </tr>
+      );
+   }
+
    render() {
       const _statData = this.state.statData;
+      const _bodyData = this.props.bodyData;
 
       if (!_statData || Object.keys(_statData).length === 0) {
          return (
             <tfoot>
                <tr>
-                  <td colSpan={this.props.bodyData[0].length}>
+                  <td colSpan={_bodyData[0].length}>
                      No Number Columns
                   </td>
                </tr>
@@ -194,9 +229,11 @@ class SummaryStats extends Component {
       }
       return (
          <tfoot>
-            {this._renderMean(this.props.bodyData, _statData)}
-            {this._renderMedian(this.props.bodyData, _statData)}
-            {this._renderMode(this.props.bodyData, _statData)}
+            {this._renderMean(_bodyData, _statData)}
+            {this._renderMedian(_bodyData, _statData)}
+            {this._renderMode(_bodyData, _statData)}
+            {this._renderRange(_bodyData, _statData)}
+            {this._renderSum(_bodyData, _statData)}
          </tfoot>
       );
    }
