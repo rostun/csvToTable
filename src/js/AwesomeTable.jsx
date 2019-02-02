@@ -62,14 +62,21 @@ class AwesomeTable extends Component {
       );
    }
 
-   _renderTableBody(bodyRows) {
-      const _bodyCols = bodyRows.map((bodyRow, idx) => {
-         return (
-            <tr key={`bodyRow=${idx}`} title={`row ${idx + 1}`}>
-               {this._renderRow(bodyRow, "bodyCell", "td")}
+   _renderTableBody(bodyRows, numOfPages, currentPage) {      
+      const _startIdx = (currentPage - 1) * numOfPages;
+      const _endIdx = _startIdx + numOfPages;
+      const _idxLimit = bodyRows.length;
+
+      const _bodyCols = [];
+
+      for (let i = _startIdx; i < _endIdx; i++) {
+         if(i === _idxLimit) { break; } //if we reached the limit, we're on the last page
+         _bodyCols.push(
+            <tr key={`bodyRow-${i}`} title={`row ${i + 1}`}>
+               {this._renderRow(bodyRows[i], "bodyCell", "td")}
             </tr>
          );
-      });
+      }
 
       return <tbody>{_bodyCols}</tbody>;
    }
@@ -99,17 +106,23 @@ class AwesomeTable extends Component {
       this.bodyRows.shift();
 
       return (
-         <table className="AwesomeTable">            
+         <table className="AwesomeTable">
             {this._renderTableHead(_tableData[0])}
-            {this._renderTableBody(this.bodyRows)}    
-            {this._renderSummaryStats(this.bodyRows)}        
+            {this._renderTableBody(
+               this.bodyRows,
+               this.props.numOfPages,
+               this.props.currentPage
+            )}
+            {this._renderSummaryStats(this.bodyRows)}
          </table>
       );
    }
 }
 
 AwesomeTable.propTypes = {
-   tableData: PropTypes.array
+   tableData: PropTypes.array,
+   numOfPages: PropTypes.number,
+   currentPage: PropTypes.number
 };
 
 export default AwesomeTable;

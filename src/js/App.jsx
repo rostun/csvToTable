@@ -4,14 +4,21 @@ import Papa from "papaparse";
 
 import UploadFile from "./UploadFile";
 import AwesomeTable from "./AwesomeTable";
-import '../sass/App.scss';
+import PaginationBlock from "./PaginationBlock";
+
+import "../sass/App.scss";
+
+//could do: build into interface
+const ROWS_PER_PAGE = 50;
 
 class App extends Component {
    constructor(props) {
       super(props);
 
       this.state = {
-         data: []
+         data: [],
+         numOfPages: 1, 
+         currentPage: 1 
       };
    }
 
@@ -19,7 +26,10 @@ class App extends Component {
       Papa.parse(file, {
          complete: results => {
             try {
-               this.setState({ data: results.data });
+               this.setState({ 
+                  data: results.data,
+                  numOfPages: Math.ceil((results.data.length-1)/ROWS_PER_PAGE)
+               });
             } catch (error) {
                console.log(error);
             }
@@ -31,11 +41,23 @@ class App extends Component {
       //read.onloadend = () => { console.log(read.result); }
    }
 
+   _changePage(currentPage) {
+      this.setState({
+         currentPage: currentPage
+      });
+   }
+
    render() {
+
       return (
          <div className="App">
             <UploadFile onChangeAction={this._parseFile.bind(this)} />
-            <AwesomeTable tableData={this.state.data} />
+            <PaginationBlock numOfPages={this.state.numOfPages} changePage={this._changePage.bind(this)} />
+            <AwesomeTable
+               tableData={this.state.data}
+               numOfPages={ROWS_PER_PAGE}
+               currentPage={this.state.currentPage}
+            />
          </div>
       );
    }
