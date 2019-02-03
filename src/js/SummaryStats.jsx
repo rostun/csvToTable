@@ -74,8 +74,7 @@ class SummaryStats extends Component {
       bodyData.forEach((row, x) => {
          //go through each column starting from second index
          for (let i = 1; i < row.length; i++) {
-            let _val =
-               i in _numData ? this._convertNumberString(row[i]) : row[i];
+            let _val = row[i];
             //if its a number column convert to num and push data (meanwhile also find the sum)
             if (i in _numData && Object.keys(_numData[i]).length !== 0) {
                _numData[i].listOfNumbers.push(_val);
@@ -102,10 +101,6 @@ class SummaryStats extends Component {
       });
 
       return { numData: _numData, textData: _textData };
-   }
-
-   _convertNumberString(cellString) {
-      return cellString * 1;
    }
 
    _findMedian(values) {

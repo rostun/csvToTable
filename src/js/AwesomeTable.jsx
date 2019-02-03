@@ -8,10 +8,12 @@ class AwesomeTable extends Component {
    constructor(props) {
       super(props);
 
+      this.headerRow = [];
       this.bodyRows = [];
 
       this.state = {
-         tableData: []
+         tableData: [],
+         currentColumn: 0
       };
    }
 
@@ -25,44 +27,62 @@ class AwesomeTable extends Component {
       }
    }
 
-   _createTemplate(row, type) {
-      //this will contain the indices of interest
-      let _numTemplate = {}; //(numbers)
-      let _textTemplate = {}; //(text)
-
-      for (let i = 1; i < row.length; i++) {
-         this._isNumber(row[i])
-            ? (_numTemplate[i] = {})
-            : (_textTemplate[i] = {});
+   _numSort(idx) {
+      return (a, b) => a[idx] - b[idx];
+   }
+   
+   _textSort(idx) {
+      return (a, b) => {
+         if (a[idx] < b[idx]) return -1;
+         if (a[idx] > b[idx]) return 1;
+         return 0;
       }
-      return { numTemplate: _numTemplate, textTemplate: _textTemplate };
-   }
-
-   _isNumber(cellString) {
-      const _cellValue = cellString * 1;
-      return !isNaN(_cellValue);
-   }
+   } 
 
    _numberRows(tableData) {
       if (!tableData || tableData.length === 0) {
          return [];
       }
-
+      
       tableData = tableData.map((row, idx) => {
-         row.unshift(idx.toString()); //indices should not be sorted
+         row.unshift(idx);
          return row;
       });
 
       return tableData;
    }
 
-   _sortColumn(bodyRows) {
-      _tableBody = bodyRows.sort()
-      this.setState({ tableData: this._numberRows(_tableBody) });
+   _sortColumn(headerRow, bodyRows, template, e) {
+      let _id = e.target.id;
+      const _current = this.state.currentColumn;
+      const _nums = template.numTemplate;
+      const _texts = template.textTemplate;
+
+      //new column clicked
+      if(_id in _nums && _current === null || _current !== _id || _id === 0) {
+         bodyRows.sort(this._numSort(_id));
+      }
+      if(_id in _texts && _current === null || _current !== _id) {
+         bodyRows.sort(this._textSort(_id));
+      }
+      //same column clicked
+      if(_id === _current) {
+         bodyRows.reverse();  
+         _id = null; 
+      }
+      
+      let _tableData = Object.assign([], bodyRows);
+      _tableData.unshift(headerRow);
+
+      this.setState({ 
+         tableData: _tableData,
+         currentColumn: _id 
+      });
+
    }
 
-   _renderTableHead(headerRow) {
-      const _headerCols = this._renderRow(headerRow, "headerCell", "th");
+   _renderTableHead(headerRow, bodyRows, template) {
+      const _headerCols = this._renderRow(headerRow, "headerCell", "th", this._sortColumn.bind(this, headerRow, bodyRows, template));
 
       return (
          <thead>
@@ -90,11 +110,11 @@ class AwesomeTable extends Component {
       return <tbody>{_bodyCols}</tbody>;
    }
 
-   _renderRow(row, keyName, tag) {
+   _renderRow(row, keyName, tag, onClick) {
       const CustomTag = tag;
 
       return row.map((cell, idx) => {
-         return <CustomTag key={`${keyName}-${idx}`}>{cell}</CustomTag>;
+         return <CustomTag id={idx} key={`${keyName}-${idx}`} onClick={onClick}>{cell}</CustomTag>;
       });
    }
 
@@ -105,19 +125,19 @@ class AwesomeTable extends Component {
          return <div>Upload Some Data!</div>;
       }
 
+      this.headerRow = _tableData[0];
       this.bodyRows = Object.assign([], this.state.tableData);
       this.bodyRows.shift();
-      const _template = this._createTemplate(this.bodyRows[0]);
 
       return (
          <table className="AwesomeTable">
-            {this._renderTableHead(_tableData[0])}
+            {this._renderTableHead(this.headerRow, this.bodyRows, this.props.template)}
             {this._renderTableBody(
                this.bodyRows,
                this.props.numOfPages,
                this.props.currentPage
             )}
-            <SummaryStats bodyData={this.bodyRows} template={_template}/>
+            <SummaryStats bodyData={this.bodyRows} template={this.props.template}/>
          </table>
       );
    }
@@ -125,6 +145,7 @@ class AwesomeTable extends Component {
 
 AwesomeTable.propTypes = {
    tableData: PropTypes.array,
+   template: PropTypes.object,
    numOfPages: PropTypes.number,
    currentPage: PropTypes.number
 };
