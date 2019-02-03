@@ -18,8 +18,8 @@ class App extends Component {
       this.state = {
          data: [],
          template: {},
-         numOfPages: 1, 
-         currentPage: 1 
+         numOfPages: 1,
+         currentPage: 1
       };
    }
 
@@ -30,8 +30,8 @@ class App extends Component {
 
       for (let i = 0; i < row.length; i++) {
          this._isNumber(row[i])
-            ? (_numTemplate[i+1] = {}) //to account for is column
-            : (_textTemplate[i+1] = {});
+            ? (_numTemplate[i + 1] = {}) //to account for is column
+            : (_textTemplate[i + 1] = {});
       }
       return { numTemplate: _numTemplate, textTemplate: _textTemplate };
    }
@@ -39,7 +39,7 @@ class App extends Component {
    _convertNumberString(cellString) {
       return cellString * 1;
    }
-   
+
    _isNumber(cellString) {
       const _cellValue = cellString * 1;
       return !isNaN(_cellValue);
@@ -48,10 +48,10 @@ class App extends Component {
    _processData(data) {
       data.forEach(row => {
          row.forEach((cell, idx) => {
-            if(this._isNumber(cell)) {
+            if (this._isNumber(cell)) {
                row[idx] = this._convertNumberString(cell);
             }
-         })
+         });
       });
 
       return data;
@@ -63,12 +63,13 @@ class App extends Component {
             try {
                const _data = this._processData(results.data);
                const _template = this._createTemplate(_data[1]); //second row
-               console.log(_data);
-               console.log(_template);
-               this.setState({ 
+
+               this.setState({
                   data: _data,
                   template: _template,
-                  numOfPages: Math.ceil((results.data.length-1)/ROWS_PER_PAGE)
+                  numOfPages: Math.ceil(
+                     (results.data.length - 1) / ROWS_PER_PAGE
+                  )
                });
             } catch (error) {
                console.log(error);
@@ -91,10 +92,13 @@ class App extends Component {
       return (
          <div className="App">
             <UploadFile onChangeAction={this._parseFile.bind(this)} />
-            <PaginationBlock numOfPages={this.state.numOfPages} changePage={this._changePage.bind(this)} />
+            <PaginationBlock
+               numOfPages={this.state.numOfPages}
+               changePage={this._changePage.bind(this)}
+            />
             <AwesomeTable
                tableData={this.state.data}
-               template = {this.state.template}
+               template={this.state.template}
                numOfPages={ROWS_PER_PAGE}
                currentPage={this.state.currentPage}
             />

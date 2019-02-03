@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 
 import "../sass/AwesomeTable.scss";
 import SummaryStats from "./SummaryStats";
+import FilterBlock from "./FilterBlock";
 
 class AwesomeTable extends Component {
    constructor(props) {
@@ -30,20 +31,20 @@ class AwesomeTable extends Component {
    _numSort(idx) {
       return (a, b) => a[idx] - b[idx];
    }
-   
+
    _textSort(idx) {
       return (a, b) => {
          if (a[idx] < b[idx]) return -1;
          if (a[idx] > b[idx]) return 1;
          return 0;
-      }
-   } 
+      };
+   }
 
    _numberRows(tableData) {
       if (!tableData || tableData.length === 0) {
          return [];
       }
-      
+
       tableData = tableData.map((row, idx) => {
          row.unshift(idx);
          return row;
@@ -59,30 +60,38 @@ class AwesomeTable extends Component {
       const _texts = template.textTemplate;
 
       //new column clicked
-      if(_id in _nums && _current === null || _current !== _id || _id === 0) {
+      if (
+         (_id in _nums && _current === null) ||
+         _current !== _id ||
+         _id === 0
+      ) {
          bodyRows.sort(this._numSort(_id));
       }
-      if(_id in _texts && _current === null || _current !== _id) {
+      if ((_id in _texts && _current === null) || _current !== _id) {
          bodyRows.sort(this._textSort(_id));
       }
       //same column clicked
-      if(_id === _current) {
-         bodyRows.reverse();  
-         _id = null; 
+      if (_id === _current) {
+         bodyRows.reverse();
+         _id = null;
       }
-      
+
       let _tableData = Object.assign([], bodyRows);
       _tableData.unshift(headerRow);
 
-      this.setState({ 
+      this.setState({
          tableData: _tableData,
-         currentColumn: _id 
+         currentColumn: _id
       });
-
    }
 
    _renderTableHead(headerRow, bodyRows, template) {
-      const _headerCols = this._renderRow(headerRow, "headerCell", "th", this._sortColumn.bind(this, headerRow, bodyRows, template));
+      const _headerCols = this._renderCell(
+         headerRow,
+         "headerCell",
+         "th",
+         this._sortColumn.bind(this, headerRow, bodyRows, template)
+      );
 
       return (
          <thead>
@@ -91,18 +100,24 @@ class AwesomeTable extends Component {
       );
    }
 
-   _renderTableBody(bodyRows, numOfPages, currentPage) {      
+   _renderTableBody(bodyRows, textTemplate, numOfPages, currentPage) {
       const _startIdx = (currentPage - 1) * numOfPages;
       const _endIdx = _startIdx + numOfPages;
       const _idxLimit = bodyRows.length;
 
-      const _bodyCols = [];
+      let _bodyCols = [];
+
+      const _searchRow = this._renderSearchRow(bodyRows, textTemplate);
+
+      _bodyCols.push(<tr key="bodyRow-search">{_searchRow}</tr>);
 
       for (let i = _startIdx; i < _endIdx; i++) {
-         if(i === _idxLimit) { break; } //if we reached the limit, we're on the last page
+         if (i === _idxLimit) {
+            break;
+         } //if we reached the limit, we're on the last page
          _bodyCols.push(
             <tr key={`bodyRow-${i}`} title={`row ${i + 1}`}>
-               {this._renderRow(bodyRows[i], "bodyCell", "td")}
+               {this._renderCell(bodyRows[i], "bodyCell", "td")}
             </tr>
          );
       }
@@ -110,11 +125,33 @@ class AwesomeTable extends Component {
       return <tbody>{_bodyCols}</tbody>;
    }
 
-   _renderRow(row, keyName, tag, onClick) {
+   _renderSearchRow(bodyRows, textTemplate) {
+      const _num = "number";
+      const _text = "text";
+
+      let _searchRow = [];
+
+      for (let i = 0; i < bodyRows[0].length; i++) {
+         const _type = i in textTemplate ? _text : _num;
+         _searchRow.push(
+            <td key={`search-cell${i}`}>
+               <FilterBlock _key={`searchBlock-${i}`} type={_type} />
+            </td>
+         );
+      }
+
+      return _searchRow;
+   }
+
+   _renderCell(row, keyName, tag, onClick) {
       const CustomTag = tag;
 
       return row.map((cell, idx) => {
-         return <CustomTag id={idx} key={`${keyName}-${idx}`} onClick={onClick}>{cell}</CustomTag>;
+         return (
+            <CustomTag id={idx} key={`${keyName}-${idx}`} onClick={onClick}>
+               {cell}
+            </CustomTag>
+         );
       });
    }
 
@@ -131,23 +168,31 @@ class AwesomeTable extends Component {
 
       return (
          <table className="AwesomeTable">
-            {this._renderTableHead(this.headerRow, this.bodyRows, this.props.template)}
+            {this._renderTableHead(
+               this.headerRow,
+               this.bodyRows,
+               this.props.template
+            )}
             {this._renderTableBody(
                this.bodyRows,
+               this.props.template.textTemplate,
                this.props.numOfPages,
                this.props.currentPage
             )}
-            <SummaryStats bodyData={this.bodyRows} template={this.props.template}/>
+            <SummaryStats
+               bodyData={this.bodyRows}
+               template={this.props.template}
+            />
          </table>
       );
    }
 }
 
 AwesomeTable.propTypes = {
-   tableData: PropTypes.array,
-   template: PropTypes.object,
-   numOfPages: PropTypes.number,
-   currentPage: PropTypes.number
+   tableData: PropTypes.array.isRequired,
+   template: PropTypes.object.isRequired,
+   numOfPages: PropTypes.number.isRequired,
+   currentPage: PropTypes.number.isRequired
 };
 
 export default AwesomeTable;

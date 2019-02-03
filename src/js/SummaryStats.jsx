@@ -28,7 +28,10 @@ class SummaryStats extends Component {
    }
 
    componentDidMount() {
-      const _data = this._calculateData(this.props.bodyData, this.props.template);
+      const _data = this._calculateData(
+         this.props.bodyData,
+         this.props.template
+      );
 
       this.setState({
          numData: _data.numData,
@@ -37,8 +40,14 @@ class SummaryStats extends Component {
    }
 
    componentDidUpdate(prevProps) {
-      if (this.props.bodyData !== prevProps.bodyData || this.props.template !== prevProps.template) {
-         const _data = this._calculateData(this.props.bodyData, this.props.template);
+      if (
+         this.props.bodyData !== prevProps.bodyData ||
+         this.props.template !== prevProps.template
+      ) {
+         const _data = this._calculateData(
+            this.props.bodyData,
+            this.props.template
+         );
 
          this.setState({
             numData: _data.numData,
@@ -303,11 +312,10 @@ class SummaryStats extends Component {
    }
 }
 
-
 SummaryStats.propTypes = {
-   bodyData: PropTypes.array,
+   bodyData: PropTypes.array.isRequired,
    /* { numData/textData: {idx: {}, idx: {}, etc} */
-   template: PropTypes.object
+   template: PropTypes.object.isRequired
 };
 
 export default SummaryStats;

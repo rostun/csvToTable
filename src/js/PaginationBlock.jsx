@@ -63,8 +63,8 @@ class PaginationBlock extends Component {
 }
 
 PaginationBlock.propTypes = {
-   numOfPages: PropTypes.number,
-   changePage: PropTypes.func
+   numOfPages: PropTypes.number.isRequired,
+   changePage: PropTypes.func.isRequired
 };
 
 export default PaginationBlock;
