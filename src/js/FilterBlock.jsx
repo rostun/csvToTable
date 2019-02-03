@@ -11,9 +11,8 @@ class FilterBlock extends Component {
    }
 
    _onType(e) {
-      console.log(e);
       this.setState({
-         input: e
+         input: e.target.value
       });
    }
 
