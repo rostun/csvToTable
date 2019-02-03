@@ -25,6 +25,24 @@ class AwesomeTable extends Component {
       }
    }
 
+   _createTemplate(row, type) {
+      //this will contain the indices of interest
+      let _numTemplate = {}; //(numbers)
+      let _textTemplate = {}; //(text)
+
+      for (let i = 1; i < row.length; i++) {
+         this._isNumber(row[i])
+            ? (_numTemplate[i] = {})
+            : (_textTemplate[i] = {});
+      }
+      return { numTemplate: _numTemplate, textTemplate: _textTemplate };
+   }
+
+   _isNumber(cellString) {
+      const _cellValue = cellString * 1;
+      return !isNaN(_cellValue);
+   }
+
    _numberRows(tableData) {
       if (!tableData || tableData.length === 0) {
          return [];
@@ -38,18 +56,9 @@ class AwesomeTable extends Component {
       return tableData;
    }
 
-   _isNumber(cellString) {
-      const _cellValue = cellString * 1;
-      return !isNaN(_cellValue);
-   }
-
-   _hasNumberedCells(bodyRow) {
-      for (let i = 1; i < bodyRow.length; i++) {
-         if (this._isNumber(bodyRow[i])) {
-            return true;
-         }
-      }
-      return false;
+   _sortColumn(bodyRows) {
+      _tableBody = bodyRows.sort()
+      this.setState({ tableData: this._numberRows(_tableBody) });
    }
 
    _renderTableHead(headerRow) {
@@ -89,12 +98,6 @@ class AwesomeTable extends Component {
       });
    }
 
-   _renderSummaryStats(bodyRows) {
-      if (this._hasNumberedCells(bodyRows[0])) {
-         return <SummaryStats bodyData={bodyRows} />;
-      }
-   }
-
    render() {
       let _tableData = this.state.tableData;
 
@@ -104,6 +107,7 @@ class AwesomeTable extends Component {
 
       this.bodyRows = Object.assign([], this.state.tableData);
       this.bodyRows.shift();
+      const _template = this._createTemplate(this.bodyRows[0]);
 
       return (
          <table className="AwesomeTable">
@@ -113,7 +117,7 @@ class AwesomeTable extends Component {
                this.props.numOfPages,
                this.props.currentPage
             )}
-            {this._renderSummaryStats(this.bodyRows)}
+            <SummaryStats bodyData={this.bodyRows} template={_template}/>
          </table>
       );
    }

@@ -22,33 +22,33 @@ class SummaryStats extends Component {
       super(props);
 
       this.state = {
-         statData: {},
+         numData: {},
          textData: {}
       };
    }
 
    componentDidMount() {
-      const _data = this._calculateData(this.props.bodyData);
+      const _data = this._calculateData(this.props.bodyData, this.props.template);
 
       this.setState({
-         statData: _data.statData,
+         numData: _data.numData,
          textData: _data.textData
       });
    }
 
    componentDidUpdate(prevProps) {
-      if (this.props.bodyData !== prevProps.bodyData) {
-         const _data = this._calculateData(this.props.bodyData);
+      if (this.props.bodyData !== prevProps.bodyData || this.props.template !== prevProps.template) {
+         const _data = this._calculateData(this.props.bodyData, this.props.template);
 
          this.setState({
-            statData: _data.statData,
+            numData: _data.numData,
             textData: _data.textData
          });
       }
    }
 
    /*
-   statData: {
+   numData: {
       #: {
          listOfNumbers: [#'s],
          sum: #
@@ -62,29 +62,28 @@ class SummaryStats extends Component {
       }
    }
    */
-   _calculateData(bodyData) {
+   _calculateData(bodyData, template) {
       if (!bodyData || bodyData.length === 0) {
          return {};
       }
 
-      const _data = this._createTemplate(bodyData[0]);
-      let _statData = _data.statTemplate;
-      let _textData = _data.textTemplate;
+      let _numData = template.numTemplate;
+      let _textData = template.textTemplate;
 
       //go through each row
       bodyData.forEach((row, x) => {
          //go through each column starting from second index
          for (let i = 1; i < row.length; i++) {
             let _val =
-               i in _statData ? this._convertNumberString(row[i]) : row[i];
+               i in _numData ? this._convertNumberString(row[i]) : row[i];
             //if its a number column convert to num and push data (meanwhile also find the sum)
-            if (i in _statData && Object.keys(_statData[i]).length !== 0) {
-               _statData[i].listOfNumbers.push(_val);
-               _statData[i].sum += _val;
+            if (i in _numData && Object.keys(_numData[i]).length !== 0) {
+               _numData[i].listOfNumbers.push(_val);
+               _numData[i].sum += _val;
             }
-            if (i in _statData && Object.keys(_statData[i]).length === 0) {
-               _statData[i].listOfNumbers = [_val];
-               _statData[i].sum = _val;
+            if (i in _numData && Object.keys(_numData[i]).length === 0) {
+               _numData[i].listOfNumbers = [_val];
+               _numData[i].sum = _val;
             }
             //if it's a string column push data (meanwhile add tally to which half of the alphabet they're in)
             if (i in _textData && Object.keys(_textData[i]).length !== 0) {
@@ -102,25 +101,7 @@ class SummaryStats extends Component {
          }
       });
 
-      return { statData: _statData, textData: _textData };
-   }
-
-   _createTemplate(row, type) {
-      //this will contain the indices of interest
-      let _statTemplate = {}; //(numbers)
-      let _textTemplate = {}; //(text)
-
-      for (let i = 1; i < row.length; i++) {
-         this._isNumber(row[i])
-            ? (_statTemplate[i] = {})
-            : (_textTemplate[i] = {});
-      }
-      return { statTemplate: _statTemplate, textTemplate: _textTemplate };
-   }
-
-   _isNumber(cellString) {
-      const _cellValue = cellString * 1;
-      return !isNaN(_cellValue);
+      return { numData: _numData, textData: _textData };
    }
 
    _convertNumberString(cellString) {
@@ -159,7 +140,7 @@ class SummaryStats extends Component {
       });
    }
 
-   _renderMean(bodyData, statData) {
+   _renderMean(bodyData, numData) {
       const _numRows = bodyData.length;
       const _numCols = bodyData[0].length;
       let _meanCols = [];
@@ -167,7 +148,7 @@ class SummaryStats extends Component {
       for (let i = 1; i < _numCols; i++) {
          const _key = `mean-${i}`;
 
-         const _mean = i in statData ? statData[i].sum / _numRows : null;
+         const _mean = i in numData ? numData[i].sum / _numRows : null;
          _meanCols.push(<td key={_key}>{_mean}</td>);
       }
 
@@ -179,7 +160,7 @@ class SummaryStats extends Component {
       );
    }
 
-   _renderMedian(bodyData, statData) {
+   _renderMedian(bodyData, numData) {
       const _numCols = bodyData[0].length;
       let _medCols = [];
 
@@ -187,7 +168,7 @@ class SummaryStats extends Component {
          const _key = `med-${i}`;
 
          const _med =
-            i in statData ? this._findMedian(statData[i].listOfNumbers) : null;
+            i in numData ? this._findMedian(numData[i].listOfNumbers) : null;
          _medCols.push(<td key={_key}>{_med}</td>);
       }
 
@@ -199,7 +180,7 @@ class SummaryStats extends Component {
       );
    }
 
-   _renderMode(bodyData, statData) {
+   _renderMode(bodyData, numData) {
       const _numCols = bodyData[0].length;
       let _modeCols = [];
 
@@ -207,8 +188,8 @@ class SummaryStats extends Component {
          const _key = `med-${i}`;
 
          const _modes =
-            i in statData
-               ? this._findMode(statData[i].listOfNumbers).toString()
+            i in numData
+               ? this._findMode(numData[i].listOfNumbers).toString()
                : null;
          _modeCols.push(<td key={_key}>{_modes}</td>);
       }
@@ -221,7 +202,7 @@ class SummaryStats extends Component {
       );
    }
 
-   _renderRange(bodyData, statData) {
+   _renderRange(bodyData, numData) {
       const _numCols = bodyData[0].length;
       let _rangeCols = [];
 
@@ -229,8 +210,8 @@ class SummaryStats extends Component {
          const _key = `range-${i}`;
          const _ranges = null;
 
-         if (i in statData) {
-            const _list = statData[i].listOfNumbers;
+         if (i in numData) {
+            const _list = numData[i].listOfNumbers;
             _ranges = `${_list[0]}-${_list[_list.length - 1]}`;
          }
 
@@ -245,13 +226,13 @@ class SummaryStats extends Component {
       );
    }
 
-   _renderSum(bodyData, statData) {
+   _renderSum(bodyData, numData) {
       const _numCols = bodyData[0].length;
       let _sumCols = [];
 
       for (let i = 1; i < _numCols; i++) {
          const _key = `sum-${i}`;
-         const _sums = i in statData ? statData[i].sum : null;
+         const _sums = i in numData ? numData[i].sum : null;
          _sumCols.push(<td key={_key}>{_sums}</td>);
       }
 
@@ -300,11 +281,11 @@ class SummaryStats extends Component {
    }
 
    render() {
-      const _statData = this.state.statData;
+      const _numData = this.state.numData;
       const _textData = this.state.textData;
       const _bodyData = this.props.bodyData;
 
-      if (!_statData || Object.keys(_statData).length === 0) {
+      if (!_numData || Object.keys(_numData).length === 0) {
          return (
             <tfoot>
                <tr>
@@ -315,11 +296,11 @@ class SummaryStats extends Component {
       }
       return (
          <tfoot>
-            {this._renderMean(_bodyData, _statData)}
-            {this._renderMedian(_bodyData, _statData)}
-            {this._renderMode(_bodyData, _statData)}
-            {this._renderRange(_bodyData, _statData)}
-            {this._renderSum(_bodyData, _statData)}
+            {this._renderMean(_bodyData, _numData)}
+            {this._renderMedian(_bodyData, _numData)}
+            {this._renderMode(_bodyData, _numData)}
+            {this._renderRange(_bodyData, _numData)}
+            {this._renderSum(_bodyData, _numData)}
             {this._renderCountAM(_bodyData, _textData)}
             {this._renderCountNZ(_bodyData, _textData)}
          </tfoot>
@@ -327,8 +308,11 @@ class SummaryStats extends Component {
    }
 }
 
+
 SummaryStats.propTypes = {
-   bodyData: PropTypes.array
+   bodyData: PropTypes.array,
+   /* { numData/textData: {idx: {}, idx: {}, etc} */
+   template: PropTypes.object
 };
 
 export default SummaryStats;
