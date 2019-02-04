@@ -85,6 +85,10 @@ class AwesomeTable extends Component {
       });
    }
 
+   _filterTable(e) {
+      console.log("we're searching");
+   }
+
    _renderTableHead(headerRow, bodyRows, template) {
       const _headerCols = this._renderCell(
          headerRow,
@@ -135,7 +139,7 @@ class AwesomeTable extends Component {
          const _type = i in textTemplate ? _text : _num;
          _searchRow.push(
             <td key={`search-cell${i}`}>
-               <FilterBlock _key={`searchBlock-${i}`} type={_type} />
+               <FilterBlock _key={`searchBlock-${i}`} type={_type} onChangeAction={this._filterTable}/>
             </td>
          );
       }
