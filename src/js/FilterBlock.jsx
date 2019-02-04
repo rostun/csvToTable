@@ -25,7 +25,7 @@ class FilterBlock extends Component {
 		if(!this.timer_is_on) {
 			this.delayTimer = setTimeout(() => {
 				this.timer_is_on = false;
-				this.props.onChangeAction(this.state.input);
+				this.props.onChangeAction(this.state.input, this.props.id);
 			}, 250);
 
 			this.timer_is_on = true;
@@ -45,6 +45,7 @@ class FilterBlock extends Component {
 }
 
 FilterBlock.propTypes = {
+	id: PropTypes.number,
    _key: PropTypes.string,
 	type: PropTypes.oneOf(["number", "text"]).isRequired,
 	onChangeAction: PropTypes.func
