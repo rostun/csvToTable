@@ -31,11 +31,11 @@ class PaginationBlock extends Component {
       for (let i = 0; i < numOfPages; i++) {
          _pageNumbers.push(
             <li
-               key={`page-${i+1}`}
-               id={i+1}
+               key={`page-${i + 1}`}
+               id={i + 1}
                onClick={this._handleClick.bind(this)}
             >
-               {i+1}
+               {i + 1}
             </li>
          );
       }

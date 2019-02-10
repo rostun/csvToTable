@@ -17,32 +17,31 @@ class App extends Component {
 
       this.state = {
          data: [],
-         template: {},
          numOfPages: 1,
          currentPage: 1
       };
    }
 
-   _createTemplate(row) {
-      //this will contain the indices of interest
-      let _numTemplate = {}; //(numbers)
-      let _textTemplate = {}; //(text)
+   _isNumber(cellString) {
+      const _cellValue = cellString * 1;
+      return !isNaN(_cellValue);
+   }
 
-      for (let i = 0; i < row.length; i++) {
-         this._isNumber(row[i])
-            ? (_numTemplate[i + 1] = {}) //to account for is column
-            : (_textTemplate[i + 1] = {});
+   _numberRows(tableData) {
+      if (!tableData || tableData.length === 0) {
+         return [];
       }
-      return { numTemplate: _numTemplate, textTemplate: _textTemplate };
+
+      tableData = tableData.map((row, idx) => {
+         row.unshift(idx);
+         return row;
+      });
+
+      return tableData;
    }
 
    _convertNumberString(cellString) {
       return cellString * 1;
-   }
-
-   _isNumber(cellString) {
-      const _cellValue = cellString * 1;
-      return !isNaN(_cellValue);
    }
 
    _processData(data) {
@@ -57,20 +56,18 @@ class App extends Component {
       return data;
    }
 
+   _calculateRowsPerPage(numOfRows) {
+      return Math.ceil((numOfRows - 1) / ROWS_PER_PAGE);
+   }
+
    _parseFile(file) {
       Papa.parse(file, {
          complete: results => {
             try {
-               const _data = this._processData(results.data);
-               const _template = this._createTemplate(_data[1]); //second row
+               let _data = this._processData(results.data);
+               _data = this._numberRows(_data);
 
-               this.setState({
-                  data: _data,
-                  template: _template,
-                  numOfPages: Math.ceil(
-                     (results.data.length - 1) / ROWS_PER_PAGE
-                  )
-               });
+               this._setAppData(_data);
             } catch (error) {
                console.log(error);
             }
@@ -88,8 +85,17 @@ class App extends Component {
       });
    }
 
-   _changeTableData(data) {
-      this.setState({ data });
+   _setAppData(data) {
+      this.setState({
+         data: data,
+         numOfPages: this._calculateRowsPerPage(data.length)
+      });
+   }
+
+   _changeNumOfPages(numOfRows) {
+      this.setState({
+         numOfPages: this._calculateRowsPerPage(numOfRows)
+      });
    }
 
    render() {
@@ -102,10 +108,9 @@ class App extends Component {
             />
             <AwesomeTable
                tableData={this.state.data}
-               template={this.state.template}
-               numOfPages={ROWS_PER_PAGE}
+               rowsPerPage={ROWS_PER_PAGE}
                currentPage={this.state.currentPage}
-               changeTableData={this._changeTableData.bind(this)}
+               changePagination={this._changeNumOfPages.bind(this)}
             />
          </div>
       );
