@@ -1,7 +1,7 @@
 # csvToTable
 read in csv file into table
 
-#TO RUN UI
+# TO RUN UI
 
 npm run build 
 npm start

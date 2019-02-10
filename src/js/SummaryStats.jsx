@@ -289,11 +289,20 @@ class SummaryStats extends Component {
       const _textData = this.state.textData;
       const _bodyData = this.props.bodyData;
 
-      if (!_numData || Object.keys(_numData).length === 0) {
+      if (!_bodyData || _bodyData.length === 0) {
          return (
             <tfoot>
                <tr>
-                  <td colSpan={_bodyData[0].length}>No Number Columns</td>
+                  <td colSpan={this.props.numColumns}>No Rows</td>
+               </tr>
+            </tfoot>
+         );
+      }
+      if(!this.state.textData || !this.state.numData) {
+         return (
+            <tfoot>
+               <tr>
+                  <td colSpan={this.props.numColumns}>Type could not be determined for one or more rows</td>
                </tr>
             </tfoot>
          );
@@ -315,7 +324,8 @@ class SummaryStats extends Component {
 SummaryStats.propTypes = {
    bodyData: PropTypes.array.isRequired,
    /* { numData/textData: {idx: {}, idx: {}, etc} */
-   template: PropTypes.object.isRequired
+   template: PropTypes.object.isRequired,
+   numColumns: PropTypes.number.isRequired
 };
 
 export default SummaryStats;

@@ -21,30 +21,33 @@ class AwesomeTable extends Component {
    }
 
    componentDidMount() {
-      this.setState({ bodyRowsFiltered: this._setParams(this.props.tableData)});
+      this.setState({
+         bodyRowsFiltered: this._setParams(this.props.tableData)
+      });
    }
 
    componentDidUpdate(prevProps) {
       if (this.props.tableData !== prevProps.tableData) {
-         this.setState({ bodyRowsFiltered: this._setParams(this.props.tableData) });
+         this.setState({
+            bodyRowsFiltered: this._setParams(this.props.tableData)
+         });
       }
    }
 
    _setParams(tableData) {
-      if(tableData.length === 0) {
+      if (tableData.length === 0) {
          return [];
       }
 
       this.headerRow = tableData[0];
 
-      if(tableData.length === 1) {
+      if (tableData.length === 1) {
          return [];
       }
 
-      this.typeTracker = this._createTemplate(tableData[1]); //first data row
-      this.bodyRows = Object.assign([], tableData); 
+      this.bodyRows = Object.assign([], tableData);
       this.bodyRows.shift();
-      
+
       return Object.assign([], this.bodyRows);
    }
 
@@ -78,7 +81,7 @@ class AwesomeTable extends Component {
       };
    }
 
-   _sortColumn(bodyRowsFiltered, template, e) {
+   _sortColumn(bodyRows, bodyRowsFiltered, template, e) {
       let _id = e.target.id;
       const _current = this.state.currentColumn;
       const _nums = template.numTemplate;
@@ -91,13 +94,16 @@ class AwesomeTable extends Component {
          _id === 0
       ) {
          bodyRowsFiltered.sort(this._numSort(_id));
+         bodyRows.sort(this._numSort(_id));
       }
       if ((_id in _texts && _current === null) || _current !== _id) {
          bodyRowsFiltered.sort(this._textSort(_id));
+         bodyRows.sort(this._textSort(_id));
       }
       //same column clicked
       if (_id === _current) {
          bodyRowsFiltered.reverse();
+         bodyRows.reverse();
          _id = null;
       }
 
@@ -106,13 +112,7 @@ class AwesomeTable extends Component {
       });
    }
 
-   _filterTable(
-      bodyRows,
-      filterTracker,
-      changePagination,
-      input,
-      col
-   ) {
+   _filterTable(bodyRows, filterTracker, changePagination, input, col) {
       filterTracker[col] = input;
 
       let _bodyRowsFiltered = Object.assign([], bodyRows);
@@ -135,12 +135,7 @@ class AwesomeTable extends Component {
       console.log(bodyRows);
    }
 
-   _renderSearchRow(
-      bodyRows,
-      filterTracker,
-      textTemplate,
-      changePagination
-   ) {
+   _renderSearchRow(bodyRows, filterTracker, textTemplate, changePagination) {
       const _num = "number";
       const _text = "text";
 
@@ -218,12 +213,12 @@ class AwesomeTable extends Component {
       return <tbody>{_bodyCols}</tbody>;
    }
 
-   _renderTableHead(headerRow, bodyRowsFiltered, template) {
+   _renderTableHead(headerRow, bodyRows, bodyRowsFiltered, template) {
       const _headerCols = this._renderCell(
          headerRow,
          "headerCell",
          "th",
-         this._sortColumn.bind(this, bodyRowsFiltered, template)
+         this._sortColumn.bind(this, bodyRows, bodyRowsFiltered, template)
       );
 
       return (
@@ -240,10 +235,14 @@ class AwesomeTable extends Component {
          return <div>Upload Some Data!</div>;
       }
 
+      //reset template on table rerender
+      this.typeTracker = this._createTemplate(_bodyRows[0]);
+
       return (
          <table className="AwesomeTable">
             {this._renderTableHead(
                this.headerRow,
+               this.bodyRows,
                this.state.bodyRowsFiltered,
                this.typeTracker
             )}
@@ -259,6 +258,7 @@ class AwesomeTable extends Component {
             <SummaryStats
                bodyData={this.state.bodyRowsFiltered}
                template={this.typeTracker}
+               numColumns={this.headerRow.length}
             />
          </table>
       );
