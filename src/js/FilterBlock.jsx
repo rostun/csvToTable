@@ -35,7 +35,6 @@ class FilterBlock extends Component {
    render() {
       return (
          <input
-            key={`searchInput-${this.props._key}`}
             value={this.state.input}
 				type={this.props.type}
             onChange={this._onType.bind(this)}
@@ -46,7 +45,6 @@ class FilterBlock extends Component {
 
 FilterBlock.propTypes = {
 	id: PropTypes.number,
-   _key: PropTypes.string,
 	type: PropTypes.oneOf(["number", "text"]).isRequired,
 	onChangeAction: PropTypes.func
 };

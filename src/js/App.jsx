@@ -88,6 +88,10 @@ class App extends Component {
       });
    }
 
+   _changeTableData(data) {
+      this.setState({ data });
+   }
+
    render() {
       return (
          <div className="App">
@@ -101,6 +105,7 @@ class App extends Component {
                template={this.state.template}
                numOfPages={ROWS_PER_PAGE}
                currentPage={this.state.currentPage}
+               changeTableData={this._changeTableData.bind(this)}
             />
          </div>
       );

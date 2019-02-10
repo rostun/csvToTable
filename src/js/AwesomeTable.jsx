@@ -10,11 +10,13 @@ class AwesomeTable extends Component {
       super(props);
 
       this.headerRow = [];
+      this.bodyRowsFiltered = [];
       this.bodyRows = [];
 
       this.state = {
          tableData: [],
-         currentColumn: 0
+         currentColumn: 0,
+         filterTracker: []
       };
    }
 
@@ -76,7 +78,7 @@ class AwesomeTable extends Component {
          _id = null;
       }
 
-      let _tableData = Object.assign([], bodyRows);
+      let _tableData = Object.assign([], bodyRows); //changing property or value of object/array
       _tableData.unshift(headerRow);
 
       this.setState({
@@ -85,53 +87,26 @@ class AwesomeTable extends Component {
       });
    }
 
-   _filterTable(bodyRows, input, col) {
-      console.log("value: ", value);
-      console.log("input: ", input)
-      console.log("col: ", col)
+   _filterTable(headerRow, bodyRows, bodyRowsFiltered, filterTracker, changeTableData, input, col) {
+      filterTracker[col] = input;
+
+      bodyRowsFiltered = Object.assign([], bodyRows); 
+
+      //user may delete
+      filterTracker.forEach((value, idx) => {
+         bodyRowsFiltered = bodyRowsFiltered.filter(row => row[idx].indexOf(value) >= 0);
+      });
+      
+      bodyRowsFiltered.unshift(headerRow);
+      changeTableData(bodyRowsFiltered);
+
+      this.setState({
+         tableData: bodyRowsFiltered
+      });
+
    }
 
-   _renderTableHead(headerRow, bodyRows, template) {
-      const _headerCols = this._renderCell(
-         headerRow,
-         "headerCell",
-         "th",
-         this._sortColumn.bind(this, headerRow, bodyRows, template)
-      );
-
-      return (
-         <thead>
-            <tr title={"row 0"}>{_headerCols}</tr>
-         </thead>
-      );
-   }
-
-   _renderTableBody(bodyRows, textTemplate, numOfPages, currentPage) {
-      const _startIdx = (currentPage - 1) * numOfPages;
-      const _endIdx = _startIdx + numOfPages;
-      const _idxLimit = bodyRows.length;
-
-      let _bodyCols = [];
-
-      const _searchRow = this._renderSearchRow(bodyRows, textTemplate);
-
-      _bodyCols.push(<tr key="bodyRow-search">{_searchRow}</tr>);
-
-      for (let i = _startIdx; i < _endIdx; i++) {
-         if (i === _idxLimit) {
-            break;
-         } //if we reached the limit, we're on the last page
-         _bodyCols.push(
-            <tr key={`bodyRow-${i}`} title={`row ${i + 1}`}>
-               {this._renderCell(bodyRows[i], "bodyCell", "td")}
-            </tr>
-         );
-      }
-
-      return <tbody>{_bodyCols}</tbody>;
-   }
-
-   _renderSearchRow(bodyRows, textTemplate) {
+   _renderSearchRow(headerRow, bodyRows, bodyRowsFiltered, filterTracker, textTemplate, changeTableData) {
       const _num = "number";
       const _text = "text";
 
@@ -141,7 +116,7 @@ class AwesomeTable extends Component {
          const _type = i in textTemplate ? _text : _num;
          _searchRow.push(
             <td key={`search-cell${i}`}>
-               <FilterBlock id={i} _key={`searchBlock-${i}`} type={_type} onChangeAction={this._filterTable.bind(this, bodyRows)}/>
+               <FilterBlock id={i} key={`searchBlock-${i}`} type={_type} onChangeAction={this._filterTable.bind(this, headerRow, bodyRows, bodyRowsFiltered, filterTracker, changeTableData)}/>
             </td>
          );
       }
@@ -160,6 +135,46 @@ class AwesomeTable extends Component {
          );
       });
    }
+   
+   _renderTableBody(headerRow, bodyRows, bodyRowsFiltered, filterTracker, textTemplate, numOfPages, currentPage, changeTableData) {
+      const _startIdx = (currentPage - 1) * numOfPages;
+      const _endIdx = _startIdx + numOfPages;
+      const _idxLimit = bodyRows.length;
+
+      let _bodyCols = [];
+
+      const _searchRow = this._renderSearchRow(headerRow, bodyRows, bodyRowsFiltered, filterTracker, textTemplate, changeTableData);
+
+      _bodyCols.push(<tr key="bodyRow-search">{_searchRow}</tr>);
+
+      for (let i = _startIdx; i < _endIdx; i++) {
+         if (i === _idxLimit) {
+            break;
+         } //if we reached the limit, we're on the last page
+         _bodyCols.push(
+            <tr key={`bodyRow-${i}`} title={`row ${i + 1}`}>
+               {this._renderCell(bodyRowsFiltered[i], "bodyCell", "td")}
+            </tr>
+         );
+      }
+
+      return <tbody>{_bodyCols}</tbody>;
+   }
+
+   _renderTableHead(headerRow, bodyRows, template) {
+      const _headerCols = this._renderCell(
+         headerRow,
+         "headerCell",
+         "th",
+         this._sortColumn.bind(this, headerRow, bodyRows, template)
+      );
+
+      return (
+         <thead>
+            <tr title={"row 0"}>{_headerCols}</tr>
+         </thead>
+      );
+   }
 
    render() {
       let _tableData = this.state.tableData;
@@ -169,8 +184,9 @@ class AwesomeTable extends Component {
       }
 
       this.headerRow = _tableData[0];
-      this.bodyRows = Object.assign([], this.state.tableData);
+      this.bodyRows = Object.assign([], this.state.tableData); //changing property or value of object/array
       this.bodyRows.shift();
+      this.bodyRowsFiltered = Object.assign([], this.bodyRows); 
 
       return (
          <table className="AwesomeTable">
@@ -180,10 +196,14 @@ class AwesomeTable extends Component {
                this.props.template
             )}
             {this._renderTableBody(
+               this.headerRow,
                this.bodyRows,
+               this.bodyRowsFiltered,
+               this.state.filterTracker,
                this.props.template.textTemplate,
                this.props.numOfPages,
-               this.props.currentPage
+               this.props.currentPage,
+               this.props.changeTableData
             )}
             <SummaryStats
                bodyData={this.bodyRows}
@@ -198,7 +218,8 @@ AwesomeTable.propTypes = {
    tableData: PropTypes.array.isRequired,
    template: PropTypes.object.isRequired,
    numOfPages: PropTypes.number.isRequired,
-   currentPage: PropTypes.number.isRequired
+   currentPage: PropTypes.number.isRequired,
+   changeTableData: PropTypes.func.isRequired
 };
 
 export default AwesomeTable;
