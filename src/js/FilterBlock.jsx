@@ -26,7 +26,7 @@ class FilterBlock extends Component {
          this.delayTimer = setTimeout(() => {
             this.timer_is_on = false;
             this.props.onChangeAction(this.state.input, this.props.id);
-         }, 250);
+         }, 300);
 
          this.timer_is_on = true;
       }
