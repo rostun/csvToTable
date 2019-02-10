@@ -1,4 +1,50 @@
 .App {
    margin: 1rem;
    font-family: Arial, Helvetica, sans-serif;
-}
+   .UploadFile {
+      .uploadButton {
+         display: block;
+         width: 125px;
+         height: 50px;
+         background-color: palevioletred;
+         #fileInput {
+            display: none;
+         }
+      }
+      .uploadButton:hover {
+         cursor: pointer;
+      }
+   } //UploadFile
+
+   .PaginationBlock {
+      list-style: none;
+      display: flex;
+   } //PaginationBlock
+
+   .PaginationBlock > li {
+      margin-right: 0.3em;
+      color: blue;
+      user-select: none;
+      cursor: pointer;
+   } //PaginationBlock
+
+   .AwesomeTable {
+      width: 100%;
+      th {
+         text-align: left;
+         background-color: pink;
+      }
+      td,
+      th {
+         border: 1px solid #ddd;
+         padding: 8px;
+      }
+      .statFooter {
+         font-weight: bold;
+         text-align: center;
+      }
+      .normalFilter > input {
+         width: 100%;
+      }
+   } //AwesomeTable
+} //App

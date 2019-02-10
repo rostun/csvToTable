@@ -32,13 +32,32 @@ class FilterBlock extends Component {
       }
    }
 
+   _updateFilterValue(e) {
+      console.log(e.target.value);
+   }
+
    render() {
+      let _alternateFilter =
+         this.props.type === "number" ? "Filter by Range" : "Filter by Letters";
+
       return (
-         <input
-            value={this.state.input}
-            type={this.props.type}
-            onChange={this._onType.bind(this)}
-         />
+         <div className="FilterBlock">
+            <div className="filterFlag">
+               <input
+                  type="checkbox"
+                  id="specialFilterFlag"
+                  onChange={this._updateFilterValue.bind(this)}
+               />
+               <label htmlFor="specialFilterFlag">{_alternateFilter}</label>
+            </div>
+            <div className="normalFilter">
+               <input
+                  value={this.state.input}
+                  type="text"
+                  onChange={this._onType.bind(this)}
+               />
+            </div>
+         </div>
       );
    }
 }

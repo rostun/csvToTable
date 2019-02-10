@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
-import "../sass/AwesomeTable.scss";
 import SummaryStats from "./SummaryStats";
 import FilterBlock from "./FilterBlock";
 
@@ -142,16 +141,17 @@ class AwesomeTable extends Component {
       });
    }
 
-   _renderSearchRow(bodyRows, filterTracker, changePagination) {
+   _renderSearchRow(bodyRows, filterTracker, typeTracker, changePagination) {
       let _searchRow = [];
 
       for (let i = 0; i < bodyRows[0].length; i++) {
+         let _type = i in typeTracker.textTemplate ? "text" : "number";
          _searchRow.push(
             <td key={`search-cell${i}`}>
                <FilterBlock
                   id={i}
                   key={`searchBlock-${i}`}
-                  type="text"
+                  type={_type}
                   onChangeAction={this._filterTable.bind(
                      this,
                      bodyRows,
@@ -182,6 +182,7 @@ class AwesomeTable extends Component {
       bodyRows,
       bodyRowsFiltered,
       filterTracker,
+      typeTracker,
       rowsPerPage,
       currentPage,
       changePagination
@@ -195,6 +196,7 @@ class AwesomeTable extends Component {
       const _searchRow = this._renderSearchRow(
          bodyRows,
          filterTracker,
+         typeTracker,
          changePagination
       );
 
@@ -251,6 +253,7 @@ class AwesomeTable extends Component {
                this.bodyRows,
                this.state.bodyRowsFiltered,
                this.filterTracker,
+               this.typeTracker,
                this.props.rowsPerPage,
                this.props.currentPage,
                this.props.changePagination
