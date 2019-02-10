@@ -69,6 +69,10 @@ class AwesomeTable extends Component {
       return !isNaN(_cellValue);
    }
 
+   _convertNumberString(cellString) {
+      return cellString * 1;
+   }
+
    _numSort(idx) {
       return (a, b) => a[idx] - b[idx];
    }
@@ -112,7 +116,14 @@ class AwesomeTable extends Component {
       });
    }
 
-   _filterTable(bodyRows, filterTracker, changePagination, input, col) {
+   _filterTable(
+      bodyRows,
+      filterTracker,
+      changePagination,
+      textTemplate,
+      input,
+      col
+   ) {
       filterTracker[col] = input;
 
       let _bodyRowsFiltered = Object.assign([], bodyRows);
@@ -120,7 +131,7 @@ class AwesomeTable extends Component {
       //user may delete
       filterTracker.forEach((value, idx) => {
          _bodyRowsFiltered = _bodyRowsFiltered.filter(
-            row => row[idx].indexOf(value) >= 0
+            row => row[idx].toString().indexOf(value) >= 0
          );
       });
 
@@ -130,9 +141,6 @@ class AwesomeTable extends Component {
       this.setState({
          bodyRowsFiltered: _bodyRowsFiltered
       });
-
-      console.log(this.state.bodyRowsFiltered);
-      console.log(bodyRows);
    }
 
    _renderSearchRow(bodyRows, filterTracker, textTemplate, changePagination) {
@@ -153,7 +161,8 @@ class AwesomeTable extends Component {
                      this,
                      bodyRows,
                      filterTracker,
-                     changePagination
+                     changePagination,
+                     textTemplate
                   )}
                />
             </td>
