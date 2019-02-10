@@ -9,7 +9,8 @@ class FilterBlock extends Component {
       this.delayTimer = null;
 
       this.state = {
-         input: ""
+         input: "",
+         checked: false
       };
    }
 
@@ -25,7 +26,11 @@ class FilterBlock extends Component {
       if (!this.timer_is_on) {
          this.delayTimer = setTimeout(() => {
             this.timer_is_on = false;
-            this.props.onChangeAction(this.state.input, this.props.id);
+            this.props.onChangeAction(
+               this.state.input,
+               this.state.checked,
+               this.props.id
+            );
          }, 300);
 
          this.timer_is_on = true;
@@ -33,27 +38,41 @@ class FilterBlock extends Component {
    }
 
    _updateFilterValue(e) {
-      console.log(e.target.value);
+      this.setState({
+         checked: e.target.checked
+      });
    }
 
    render() {
       let _alternateFilter =
          this.props.type === "number" ? "Filter by Range" : "Filter by Letters";
 
+      let _placeHolder = "Search...";
+
+      if (this.state.checked === true) {
+         _placeHolder =
+            this.props.type === "number"
+               ? "0..100, >1000, <1000"
+               : "teh => the";
+      }
+
       return (
          <div className="FilterBlock">
             <div className="filterFlag">
                <input
                   type="checkbox"
-                  id="specialFilterFlag"
+                  id={`specialFilterFlag-${this.props.id}`}
                   onChange={this._updateFilterValue.bind(this)}
                />
-               <label htmlFor="specialFilterFlag">{_alternateFilter}</label>
+               <label htmlFor={`specialFilterFlag-${this.props.id}`}>
+                  {_alternateFilter}
+               </label>
             </div>
             <div className="normalFilter">
                <input
                   value={this.state.input}
                   type="text"
+                  placeholder={_placeHolder}
                   onChange={this._onType.bind(this)}
                />
             </div>

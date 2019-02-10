@@ -298,11 +298,13 @@ class SummaryStats extends Component {
             </tfoot>
          );
       }
-      if(!this.state.textData || !this.state.numData) {
+      if (!this.state.textData || !this.state.numData) {
          return (
             <tfoot>
                <tr>
-                  <td colSpan={this.props.numColumns}>Type could not be determined for one or more rows</td>
+                  <td colSpan={this.props.numColumns}>
+                     Type could not be determined for one or more rows
+                  </td>
                </tr>
             </tfoot>
          );
@@ -317,7 +319,9 @@ class SummaryStats extends Component {
             {this._renderCountAM(_bodyData, _textData)}
             {this._renderCountNZ(_bodyData, _textData)}
             <tr>
-               <td className="statFooter" colSpan={this.props.numColumns}>{`${_bodyData.length} Rows of Data!`}</td>
+               <td className="statFooter" colSpan={this.props.numColumns}>{`${
+                  _bodyData.length
+               } Rows of Data!`}</td>
             </tr>
          </tfoot>
       );

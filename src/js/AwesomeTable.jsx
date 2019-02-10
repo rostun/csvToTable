@@ -120,6 +120,7 @@ class AwesomeTable extends Component {
       filterTracker,
       changePagination,
       input,
+      specialFilter,
       col
    ) {
       filterTracker[col] = input;
@@ -129,7 +130,11 @@ class AwesomeTable extends Component {
       //user may delete
       filterTracker.forEach((value, idx) => {
          _bodyRowsFiltered = _bodyRowsFiltered.filter(
-            row => row[idx].toString().toLowerCase().indexOf(value) >= 0
+            row =>
+               row[idx]
+                  .toString()
+                  .toLowerCase()
+                  .indexOf(value) >= 0
          );
       });
 
