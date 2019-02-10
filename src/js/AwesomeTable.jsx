@@ -120,7 +120,6 @@ class AwesomeTable extends Component {
       bodyRows,
       filterTracker,
       changePagination,
-      textTemplate,
       input,
       col
    ) {
@@ -131,7 +130,7 @@ class AwesomeTable extends Component {
       //user may delete
       filterTracker.forEach((value, idx) => {
          _bodyRowsFiltered = _bodyRowsFiltered.filter(
-            row => row[idx].toString().indexOf(value) >= 0
+            row => row[idx].toString().toLowerCase().indexOf(value) >= 0
          );
       });
 
@@ -143,26 +142,21 @@ class AwesomeTable extends Component {
       });
    }
 
-   _renderSearchRow(bodyRows, filterTracker, textTemplate, changePagination) {
-      const _num = "number";
-      const _text = "text";
-
+   _renderSearchRow(bodyRows, filterTracker, changePagination) {
       let _searchRow = [];
 
       for (let i = 0; i < bodyRows[0].length; i++) {
-         const _type = i in textTemplate ? _text : _num;
          _searchRow.push(
             <td key={`search-cell${i}`}>
                <FilterBlock
                   id={i}
                   key={`searchBlock-${i}`}
-                  type={_type}
+                  type="text"
                   onChangeAction={this._filterTable.bind(
                      this,
                      bodyRows,
                      filterTracker,
-                     changePagination,
-                     textTemplate
+                     changePagination
                   )}
                />
             </td>
@@ -188,7 +182,6 @@ class AwesomeTable extends Component {
       bodyRows,
       bodyRowsFiltered,
       filterTracker,
-      textTemplate,
       rowsPerPage,
       currentPage,
       changePagination
@@ -202,7 +195,6 @@ class AwesomeTable extends Component {
       const _searchRow = this._renderSearchRow(
          bodyRows,
          filterTracker,
-         textTemplate,
          changePagination
       );
 
@@ -259,7 +251,6 @@ class AwesomeTable extends Component {
                this.bodyRows,
                this.state.bodyRowsFiltered,
                this.filterTracker,
-               this.typeTracker.textTemplate,
                this.props.rowsPerPage,
                this.props.currentPage,
                this.props.changePagination

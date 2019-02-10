@@ -316,6 +316,9 @@ class SummaryStats extends Component {
             {this._renderSum(_bodyData, _numData)}
             {this._renderCountAM(_bodyData, _textData)}
             {this._renderCountNZ(_bodyData, _textData)}
+            <tr>
+               <td className="statFooter" colSpan={this.props.numColumns}>{`${_bodyData.length} Rows of Data!`}</td>
+            </tr>
          </tfoot>
       );
    }
