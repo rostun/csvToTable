@@ -43,8 +43,14 @@
          font-weight: bold;
          text-align: center;
       }
-      .normalFilter > input {
+      input {
          width: 100%;
+      }
+      .normalFilter {
+         padding-bottom:10px;
+      }
+      label {
+         font-size: 11px;
       }
    } //AwesomeTable
 } //App

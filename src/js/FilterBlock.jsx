@@ -10,7 +10,7 @@ class FilterBlock extends Component {
 
       this.state = {
          input: "",
-         checked: false
+         specialInput: ""
       };
    }
 
@@ -28,7 +28,31 @@ class FilterBlock extends Component {
             this.timer_is_on = false;
             this.props.onChangeAction(
                this.state.input,
-               this.state.checked,
+               this.state.specialInput,
+               this.props.type,
+               this.props.id
+            );
+         }, 250);
+
+         this.timer_is_on = true;
+      }
+   }
+
+   _onSpecialType(e) {
+      if (this.timer_is_on) {
+         clearTimeout(this.delayTimer);
+         this.timer_is_on = false;
+      }
+      this.setState({
+         specialInput: e.target.value
+      });
+
+      if (!this.timer_is_on) {
+         this.delayTimer = setTimeout(() => {
+            this.timer_is_on = false;
+            this.props.onChangeAction(
+               this.state.input,
+               this.state.specialInput,
                this.props.type,
                this.props.id
             );
@@ -38,43 +62,38 @@ class FilterBlock extends Component {
       }
    }
 
-   _updateFilterValue(e) {
-      this.setState({
-         checked: e.target.checked
-      });
-   }
-
    render() {
       let _alternateFilter =
-         this.props.type === "number" ? "Filter by Range" : "Filter by Anagrams";
-
-      let _placeHolder = "Search...";
-
-      if (this.state.checked === true) {
-         _placeHolder =
-            this.props.type === "number"
-               ? "0..100, >1000, <1000"
-               : "teh => the";
-      }
+         this.props.type === "number" ? "Filter by Range" : "Filter by Anagram";
 
       return (
          <div className="FilterBlock">
-            <div className="filterFlag">
-               <input
-                  type="checkbox"
-                  id={`specialFilterFlag-${this.props.id}`}
-                  onChange={this._updateFilterValue.bind(this)}
-               />
-               <label htmlFor={`specialFilterFlag-${this.props.id}`}>
-                  {_alternateFilter}
-               </label>
-            </div>
             <div className="normalFilter">
+               <label htmlFor={`normalFilter-${this.props.id}`}>
+                  {"Normal Filter"}
+               </label>
                <input
+                  id={`normalFilter-${this.props.id}`}
                   value={this.state.input}
                   type="text"
-                  placeholder={_placeHolder}
+                  placeholder={"search..."}
                   onChange={this._onType.bind(this)}
+               />
+            </div>
+            <div className="specialFilter">
+               <label htmlFor={`specialFilter-${this.props.id}`}>
+                  {_alternateFilter}
+               </label>
+               <input
+                  id={`specialFilter-${this.props.id}`}
+                  value={this.state.specialInput}
+                  type="text"
+                  placeholder={
+                     this.props.type === "number"
+                        ? "0..100, >1000, <1000"
+                        : "teh => the"
+                  }
+                  onChange={this._onSpecialType.bind(this)}
                />
             </div>
          </div>

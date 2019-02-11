@@ -120,21 +120,23 @@ class AwesomeTable extends Component {
       filterTracker,
       changePagination,
       input,
-      specialFilter,
+      specialInput,
       type,
       col
    ) {
-      filterTracker[col] = input;
+      filterTracker[col] = {input, specialInput};
 
       //user may delete, so reset
       let _bodyRowsFiltered = Object.assign([], bodyRows);
       
       filterTracker.forEach((value, idx) => {
-         if(value !== '' && specialFilter === false) { //if string is empty we don't need to filter
-            _bodyRowsFiltered = this._normalFilter(_bodyRowsFiltered, value, idx);
+         //if inputs are empty we don't need to filter
+         if(value.input !== '') { 
+            _bodyRowsFiltered = this._normalFilter(_bodyRowsFiltered, value.input, idx);
          }
-         if(value !== '' && specialFilter === true)
-            _bodyRowsFiltered = this._specialFilter(_bodyRowsFiltered, value, idx, type);
+         if(value.specialInput !== '') {
+            _bodyRowsFiltered = this._specialFilter(_bodyRowsFiltered, value.specialInput, idx, type);
+         }            
       });
 
       //reset pagination
