@@ -184,7 +184,47 @@ class AwesomeTable extends Component {
    }
 
    _specialNumberFilter(bodyRowsFiltered, value, idx) {
+      let _range = '..';
+      let _lessThan = '<';
+      let _moreThan = '>';
 
+      let _expression = [];
+
+      //if it contains a character of interest, split the string
+      if(value.indexOf(_range) !== -1 && value.indexOf(_lessThan) === -1 && value.indexOf(_moreThan) === -1) {
+         _expression = value.split(_range);
+            //if lengths are correct, test if strings are numbers
+         if(_expression.length === 2 && this._isNumber(_expression[0]) && this._isNumber(_expression[1])) {
+            let _lower = this._convertNumberString(_expression[0]);
+            let _upper = this._convertNumberString(_expression[1]);
+            return bodyRowsFiltered.filter((row) => {
+               return row[idx] > _lower && row[idx] < _upper;
+            });
+         }
+      }
+      //less than 
+      if(value[0] === _lessThan && value.indexOf(_moreThan) === -1 && value.indexOf(_range) === -1) {
+         _expression = value.split(_lessThan);
+         if(_expression.length === 2 && this._isNumber(_expression[1])) {
+            let _upper = this._convertNumberString(_expression[1]);
+            return bodyRowsFiltered.filter((row) => {
+               return row[idx] < _upper;
+            });
+         }
+      }
+      //more than
+      if(value[0] === _moreThan && value.indexOf(_lessThan) === -1 && value.indexOf(_range) === -1) {
+         _expression = value.split(_moreThan);
+         if(_expression.length === 2 && this._isNumber(_expression[1])) {
+            let _lower = this._convertNumberString(_expression[1]);
+            return bodyRowsFiltered.filter((row) => {
+               return row[idx] > _lower;
+            });
+         }
+      }
+
+      //not a valid input
+      return bodyRowsFiltered;
    }
 
    _renderSearchRow(bodyRows, filterTracker, typeTracker, changePagination) {

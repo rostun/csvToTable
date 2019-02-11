@@ -32,7 +32,7 @@ class FilterBlock extends Component {
                this.props.type,
                this.props.id
             );
-         }, 300);
+         }, 500);
 
          this.timer_is_on = true;
       }
