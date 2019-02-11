@@ -121,21 +121,20 @@ class AwesomeTable extends Component {
       changePagination,
       input,
       specialFilter,
+      type,
       col
    ) {
       filterTracker[col] = input;
 
+      //user may delete, so reset
       let _bodyRowsFiltered = Object.assign([], bodyRows);
-
-      //user may delete
+      
       filterTracker.forEach((value, idx) => {
-         _bodyRowsFiltered = _bodyRowsFiltered.filter(
-            row =>
-               row[idx]
-                  .toString()
-                  .toLowerCase()
-                  .indexOf(value) >= 0
-         );
+         if(value !== '' && specialFilter === false) { //if string is empty we don't need to filter
+            _bodyRowsFiltered = this._normalFilter(_bodyRowsFiltered, value, idx);
+         }
+         if(value !== '' && specialFilter === true)
+            _bodyRowsFiltered = this._specialFilter(_bodyRowsFiltered, value, idx, type);
       });
 
       //reset pagination
@@ -144,6 +143,48 @@ class AwesomeTable extends Component {
       this.setState({
          bodyRowsFiltered: _bodyRowsFiltered
       });
+   }
+
+   _normalFilter(bodyRowsFiltered, value, idx) {
+      return bodyRowsFiltered.filter(
+         row =>
+            row[idx]
+               .toString()
+               .toLowerCase()
+               .indexOf(value) >= 0
+      );
+   }
+
+   _specialFilter(bodyRowsFiltered, value, idx, type) {
+      //if it's a text filter
+      if(type === 'text') {
+         return this._specialTextFilter(bodyRowsFiltered, value, idx);
+      } else {
+         return this._specialNumberFilter(bodyRowsFiltered, value, idx)
+      }
+   }
+
+   _specialTextFilter(bodyRowsFiltered, value, idx) {
+      let _value = value.split("").sort().join("");
+
+      return bodyRowsFiltered.filter((row) => {
+         // get the sentence and the match flag to false
+         let _rowValue = row[idx].toLowerCase();
+         let _words = _rowValue.split(" ");
+         let _match = false;
+         // go through each word and if we have an anagram
+         for(let i = 0; i < _words.length; i++) {            
+            if(_words[i].split("").sort().join("") === _value) {
+               _match = true;
+               break;
+            }
+         }
+         return _match;
+      });
+   }
+
+   _specialNumberFilter(bodyRowsFiltered, value, idx) {
+
    }
 
    _renderSearchRow(bodyRows, filterTracker, typeTracker, changePagination) {

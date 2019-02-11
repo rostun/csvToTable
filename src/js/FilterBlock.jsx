@@ -29,6 +29,7 @@ class FilterBlock extends Component {
             this.props.onChangeAction(
                this.state.input,
                this.state.checked,
+               this.props.type,
                this.props.id
             );
          }, 300);
@@ -45,7 +46,7 @@ class FilterBlock extends Component {
 
    render() {
       let _alternateFilter =
-         this.props.type === "number" ? "Filter by Range" : "Filter by Letters";
+         this.props.type === "number" ? "Filter by Range" : "Filter by Anagrams";
 
       let _placeHolder = "Search...";
 
