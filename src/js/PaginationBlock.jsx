@@ -24,6 +24,10 @@ class PaginationBlock extends Component {
    }
 
    _buildPageList(numOfPages) {
+      if (numOfPages === 1) {
+         return [];
+      }
+
       let _pageNumbers = [];
 
       for (let i = 0; i < numOfPages; i++) {
@@ -52,8 +56,8 @@ class PaginationBlock extends Component {
    render() {
       const _pageList = this.state.pageList;
 
-      if (!_pageList || _pageList <= 0) {
-         return <div>One Page</div>;
+      if (!_pageList || _pageList.length === 0) {
+         return <div />;
       }
 
       return <ul className="PaginationBlock">{this.state.pageList}</ul>;

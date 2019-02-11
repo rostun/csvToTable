@@ -124,19 +124,28 @@ class AwesomeTable extends Component {
       type,
       col
    ) {
-      filterTracker[col] = {input, specialInput};
+      filterTracker[col] = { input, specialInput };
 
       //user may delete, so reset
       let _bodyRowsFiltered = Object.assign([], bodyRows);
-      
+
       filterTracker.forEach((value, idx) => {
          //if inputs are empty we don't need to filter
-         if(value.input !== '') { 
-            _bodyRowsFiltered = this._normalFilter(_bodyRowsFiltered, value.input, idx);
+         if (value.input !== "") {
+            _bodyRowsFiltered = this._normalFilter(
+               _bodyRowsFiltered,
+               value.input,
+               idx
+            );
          }
-         if(value.specialInput !== '') {
-            _bodyRowsFiltered = this._specialFilter(_bodyRowsFiltered, value.specialInput, idx, type);
-         }            
+         if (value.specialInput !== "") {
+            _bodyRowsFiltered = this._specialFilter(
+               _bodyRowsFiltered,
+               value.specialInput,
+               idx,
+               type
+            );
+         }
       });
 
       //reset pagination
@@ -159,24 +168,32 @@ class AwesomeTable extends Component {
 
    _specialFilter(bodyRowsFiltered, value, idx, type) {
       //if it's a text filter
-      if(type === 'text') {
+      if (type === "text") {
          return this._specialTextFilter(bodyRowsFiltered, value, idx);
       } else {
-         return this._specialNumberFilter(bodyRowsFiltered, value, idx)
+         return this._specialNumberFilter(bodyRowsFiltered, value, idx);
       }
    }
 
    _specialTextFilter(bodyRowsFiltered, value, idx) {
-      let _value = value.split("").sort().join("");
+      let _value = value
+         .split("")
+         .sort()
+         .join("");
 
-      return bodyRowsFiltered.filter((row) => {
+      return bodyRowsFiltered.filter(row => {
          // get the sentence and the match flag to false
          let _rowValue = row[idx].toLowerCase();
          let _words = _rowValue.split(" ");
          let _match = false;
          // go through each word and if we have an anagram
-         for(let i = 0; i < _words.length; i++) {            
-            if(_words[i].split("").sort().join("") === _value) {
+         for (let i = 0; i < _words.length; i++) {
+            if (
+               _words[i]
+                  .split("")
+                  .sort()
+                  .join("") === _value
+            ) {
                _match = true;
                break;
             }
@@ -186,40 +203,56 @@ class AwesomeTable extends Component {
    }
 
    _specialNumberFilter(bodyRowsFiltered, value, idx) {
-      let _range = '..';
-      let _lessThan = '<';
-      let _moreThan = '>';
+      let _range = "..";
+      let _lessThan = "<";
+      let _moreThan = ">";
 
       let _expression = [];
 
       //if it contains a character of interest, split the string
-      if(value.indexOf(_range) !== -1 && value.indexOf(_lessThan) === -1 && value.indexOf(_moreThan) === -1) {
+      if (
+         value.indexOf(_range) !== -1 &&
+         value.indexOf(_lessThan) === -1 &&
+         value.indexOf(_moreThan) === -1
+      ) {
          _expression = value.split(_range);
-            //if lengths are correct, test if strings are numbers
-         if(_expression.length === 2 && this._isNumber(_expression[0]) && this._isNumber(_expression[1])) {
+         //if lengths are correct, test if strings are numbers
+         if (
+            _expression.length === 2 &&
+            this._isNumber(_expression[0]) &&
+            this._isNumber(_expression[1])
+         ) {
             let _lower = this._convertNumberString(_expression[0]);
             let _upper = this._convertNumberString(_expression[1]);
-            return bodyRowsFiltered.filter((row) => {
+            return bodyRowsFiltered.filter(row => {
                return row[idx] > _lower && row[idx] < _upper;
             });
          }
       }
-      //less than 
-      if(value[0] === _lessThan && value.indexOf(_moreThan) === -1 && value.indexOf(_range) === -1) {
+      //less than
+      if (
+         value[0] === _lessThan &&
+         value.indexOf(_moreThan) === -1 &&
+         value.indexOf(_range) === -1
+      ) {
          _expression = value.split(_lessThan);
-         if(_expression.length === 2 && this._isNumber(_expression[1])) {
+         if (_expression.length === 2 && this._isNumber(_expression[1])) {
             let _upper = this._convertNumberString(_expression[1]);
-            return bodyRowsFiltered.filter((row) => {
+            return bodyRowsFiltered.filter(row => {
                return row[idx] < _upper;
             });
          }
       }
       //more than
-      if(value[0] === _moreThan && value.indexOf(_lessThan) === -1 && value.indexOf(_range) === -1) {
+      if (
+         value[0] === _moreThan &&
+         value.indexOf(_lessThan) === -1 &&
+         value.indexOf(_range) === -1
+      ) {
          _expression = value.split(_moreThan);
-         if(_expression.length === 2 && this._isNumber(_expression[1])) {
+         if (_expression.length === 2 && this._isNumber(_expression[1])) {
             let _lower = this._convertNumberString(_expression[1]);
-            return bodyRowsFiltered.filter((row) => {
+            return bodyRowsFiltered.filter(row => {
                return row[idx] > _lower;
             });
          }
@@ -294,8 +327,9 @@ class AwesomeTable extends Component {
          if (i === _idxLimit) {
             break;
          } //if we reached the limit, we're on the last page
+
          _bodyCols.push(
-            <tr key={`bodyRow-${i}`} title={`row ${i + 1}`}>
+            <tr key={`bodyRow-${i}`} title={`Row ${i}`}>
                {this._renderCell(bodyRowsFiltered[i], "bodyCell", "td")}
             </tr>
          );
@@ -323,7 +357,7 @@ class AwesomeTable extends Component {
       let _bodyRows = this.bodyRows;
 
       if (!_bodyRows || _bodyRows.length === 0) {
-         return <div>Upload Some Data!</div>;
+         return <div className="uploadSomeData">No Data</div>;
       }
 
       //reset template on table rerender

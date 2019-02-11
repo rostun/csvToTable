@@ -26,7 +26,7 @@ class UploadFile extends Component {
       return (
          <div className="UploadFile">
             <label className="uploadButton" htmlFor="fileInput">
-               Select a csv file
+               SELECT A CSV FILE
                <input
                   id="fileInput"
                   type="file"
@@ -34,9 +34,9 @@ class UploadFile extends Component {
                   onChange={this._handleFileAttach.bind(this)}
                />
             </label>
-            <div className="uploadFileName">
+            <span className="uploadFileName">
                {this.state.file ? this.state.file.name : ""}
-            </div>
+            </span>
          </div>
       );
    }
